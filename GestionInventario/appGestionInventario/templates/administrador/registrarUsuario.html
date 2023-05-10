@@ -1,0 +1,82 @@
+{% extends "index.html" %}
+{% block encabezado %}
+{% include "encabezado.html" %}
+{% endblock %}
+{% block menu %}
+{% include "menu.html" %}
+{% endblock %}
+{% block contenido %}
+<div class="w-50 mt-3" style="margin: 0 auto;">
+    <form id="frmProducto" action="/registrarUsuario/" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+            <h3 class="text-center">Registrar Usuario</h3>
+        </div>
+        <div class="form-floating">
+            <input type="text" name="txtNombre" id="txtNombre" class="form-control" required>
+            <label for="txtNombre">Nombres </label>
+            <br>
+        </div>
+        <div class="form-floating">
+            <input type="text" name="txtApellido" id="txtApellido" class="form-control" required>
+            <label for="txtApellido">Apellidos </label>
+            <br>
+        </div>
+        <div class="form-floating">
+            <input type="text" name="txtCorreo" id="txtCorreo" class="form-control" required>
+            <label for="txtCorreo">Correo Electronico </label>
+            <br>
+        </div>
+        <div class="form-floating">
+            <select class="form-select" name="cbTipo" id="cbTipo"  required>
+                <option value="0">Seleccione</option>
+                {% for tipo in tipoUsuario %}
+                    <option value="{{tipo.0}}">{{tipo.1}}</option>
+
+                {% endfor %}
+            </select>
+            <label for="cbCategoria">Tipo </label>
+            <br>
+        </div>
+        <div class="form-floating">
+            <select class="form-select" name="cbRol" id="cbRol" required>
+                <option value="0">Seleccione</option>
+                {% for opcion in roles %}
+                    <option value="{{opcion.id}}">{{opcion.name}}</option>
+
+                {% endfor %}
+            </select>
+            <label for="cbCategoria">Rol en el sistema </label>
+            <br>
+        </div>
+        <div class="form-floating">
+            <input type="file" name="Fimagen" id="Fimagen" class="form-control" accept=".jpg">
+            <label for="Fimagen">Imagen del producto: (jpg)</label>
+        </div>
+        <div class="text-center">
+            <br>
+            <img id="imagenproducto" src="" alt="" width="100" height="100">
+        </div>
+        <div class="text-center">
+            <br>
+            <button class="btn btn-success mt.3">Registrar</button>
+        </div>
+    </form>
+    <div>
+        {% if mensaje %}
+            {% if estado %}
+                <script>
+                    Swal.fire('Producto', '{{mensaje}}', 'success')
+                </script>
+        {% else %}
+                <script>
+                    Swal.fire('Producto', '{{mensaje}}', 'error')
+                </script>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+{% block piePagina %}
+{% include "piePagina.html" %}
+{% endblock %}
