@@ -7,10 +7,13 @@
 {% endblock %}
 {% block contenido %}
 <div class="w-50 mt-3" style="margin: 0 auto;">
-    <form id="registrarUsuario" action="/registrarUsuario/" method="post" enctype="multipart/form-data">
+    <form id="registrarUsuario" action="/actualizarUsuario/" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div>
-            <h3 class="text-center">EDITAR Usuario</h3>
+            <h3 class="text-center">EDITAR USUARIO</h3>
+        </div>
+        <div>
+            <input type="hidden" id="id" name="id" value="{{usuario.id}}">
         </div>
         <div class="form-floating">
             <input type="text" name="txtNombre" id="txtNombre" class="form-control" value="{{usuario.first_name}}" required>
@@ -39,20 +42,6 @@
                 {% endfor %}
             </select>
             <label for="cbCategoria">Tipo </label>
-            <br>
-        </div>
-        <div class="form-floating">
-            <select class="form-select" name="cbRol" id="cbRol" value="{{roles.name}}" required>
-                <option value="0">Seleccione</option>
-                {% for opcion in roles %}
-                    {% if opcion.id == usuario.id %}
-                        <option value="{{opcion.id}}" selected>{{opcion.name}}</option>
-                    {% else %}
-                        <option value="{{opcion.id}}">{{opcion.name}} </option>
-                    {% endif %}
-                {% endfor %}
-            </select>
-            <label for="cbCategoria">Rol en el sistema </label>
             <br>
         </div>
         <div class="form-floating">

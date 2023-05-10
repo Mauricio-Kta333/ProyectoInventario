@@ -2,8 +2,15 @@ from django.shortcuts import render, redirect
 from django.db import Error, transaction
 from django.contrib.auth.models import *
 from appGestionInventario.models import *
+from django.contrib.auth import authenticate
+from django.contrib import auth
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import get_template
+import threading
+from smtplib import SMTPException
 import random
-import string, os
+import string, os, urllib, json
 
 
 # Create your views here.
@@ -51,6 +58,19 @@ def registrarUsuario(request):
             user.save()
             mensaje = "usuario agregado correctamente"
             retorno = {"mensaje":mensaje}
+            # Enviar correo cliente
+            asunto = 'Registro en nuestro Sistema CIES-NEIVA'
+            mensaje = f'Cordial Saludo, <b>{user.first_name} {user.last_name}</b>, nos permitimos \
+                informarle que usted ha sido registrado en nuestro Sistema de Gestión de Inventario \
+                del Centro de la Industria, la Empresa y los Servicios CIES de la ciudad de Neiva. \
+                Sus datos para ingresar a nuestro sistema son los siguientes:<br> \
+                <br><b>Username: </b> {user.username} \
+                <br><b>Password: </b> {passwordGenerado} \
+                <br><br>Lo invitamos a ingresar a nuestro sistema mediante el siguiente link: \
+                https://gestioninventario.sena.edu.co'
+            thread = threading.Thread(target=enviarCorreo,
+                                    args=(asunto,mensaje,user.email))
+            thread.start()
             #enviar correo al ususario
             return redirect("/vistagestionarUsuario/",retorno)
     except Error as error:
@@ -86,16 +106,14 @@ def consultarUsuario(request, id):
     retorno = {"mensaje": mensaje, "usuario": usuario, "tipoUsuario": tipos,"roles": roles}
     return render(request, "administrador/editar.html", retorno)
 
-def actualizarProducto(request):
+def actualizarUsuario(request):
     idUsuario = int(request.POST["id"])
     nombre = request.POST["txtNombre"]
     apellido = request.POST["txtApellido"]
     correo = request.POST["txtCorreo"]
     tipo = request.POST["cbTipo"]
     foto = request.FILES.get("Fimagen", False)
-    idRol = int(request.POST["cbRol"])
     try:
-        rol = Group.objects.get(id=idRol)
         usuario = User.objects.get(id=idUsuario)
         usuario.first_name = nombre
         usuario.last_name = apellido
@@ -128,3 +146,70 @@ def eliminarUsuario(request, id):
 
     retorno = {"mensaje":mensaje}
     return redirect("/vistagestionarUsuario/", retorno)
+
+def vistaLogin(request):
+    return render(request, "iniciarSesion.html")
+
+def login(request):
+    # Validar el recaptcha 
+    ''' Begin reCAPTCHA validation'''
+    recaptcha_response = request.POST.get('g-recaptcha-response')
+    url = 'https://www.google.com/recaptcha/api/siteverify'
+    values = {
+        'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+        'response': recaptcha_response
+    }
+    data = urllib.parse.urlencode(values).encode()
+    req = urllib.request.Request(url, data=data)
+    response = urllib.request.urlopen(req)
+    result = json.loads(response.read().decode())
+    print(result)
+    ''' End reCAPTCHA validation'''
+    
+    if result['success']:
+        username = request.POST["txtUsername"]
+        password = request.POST["txtPassword"]
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            # Registrar la variable de sesión
+            auth.login(request,user)
+            if user.groups.filter(name='Administrador').exists():
+                return redirect ('/inicioAdministrador')
+            elif user.groups.filter(name='Asistente').exists():
+                return redirect('/inicioAsistente')
+            else:
+                return redirect('/inicioInstructor')
+        else:
+            mensaje = "Usuario o Contraseña Incorrectas"
+            return render(request,"frmIniciarSesion.html",{"mensaje":mensaje})
+    else: 
+        mensaje = "Debe validar primero el recaptcha"
+        return render(request,"frmIniciarSesion.html",{"mensaje":mensaje})
+    
+def inicioAdministrador(request):
+    if request.user.is_authenticated:
+        return render(request, "administrador/inicio.html")
+
+def inicioAsistente(request):
+    if request.user.is_authenticated:
+        return render(request, "asistente/inicio.html")
+    
+def inicioInstructor(request):
+    if request.user.is_authenticated:
+        return render(request, "instructor/inicio.html")
+    
+def enviarCorreo(asunto=None,mensaje=None,destinatario=None):
+    remitente = settings.EMAIL_HOST_USER
+    template = get_template('enviarCorreo.html')
+    contenido = template.render({
+        'destinatario':destinatario,
+        'mensaje':mensaje,
+        'asunto':asunto,
+        'remitente':remitente
+    })
+    try:
+        correo = EmailMultiAlternatives(asunto,mensaje,remitente,[destinatario])
+        correo.attach_alternative(contenido, 'text/html')
+        correo.send(fail_silently=True)
+    except SMTPException as error:
+        print(error)

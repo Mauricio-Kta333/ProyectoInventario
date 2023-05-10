@@ -22,13 +22,19 @@ from django.conf import settings
 
 
 urlpatterns = [
+    path("login/", views.vistaLogin),
+    path("inicioSesion/", views.login),
     path('admin/', admin.site.urls),
     path('vistaRegistrarUsuario/',views.vistaRegistrarUsuario),
+    path("inicioAdministrador/", views.inicioAdministrador),
+    path("inicioAsistente/", views.inicioAsistente),
+    path("inicioInstructor/", views.inicioInstructor),
     path('registrarUsuario/', views.registrarUsuario),
     path('vistagestionarUsuario/', views.listaUsuarios),
     path('consultarUsuario/<int:id>/', views.consultarUsuario),
-    path('actualizarUsuario/', views.actualizarProducto),
+    path('actualizarUsuario/', views.actualizarUsuario),
     path('eliminarUsuario/<int:id>/',views.eliminarUsuario),
+    
 ]
 
 if settings.DEBUG:

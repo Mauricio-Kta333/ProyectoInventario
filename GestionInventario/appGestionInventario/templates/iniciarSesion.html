@@ -1,0 +1,41 @@
+{% extends "index.html" %}
+{% block encabezado %}
+    {% include "encabezado.html" %}
+{% endblock %}
+{% block contenido %}
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<div class="w-100 mt-4 vstack d-flex align-items-center">
+    <form action="/inicioSesion/" id="iniciarSesion" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+            <h5>INGRESAR AL SISTEMA</h5>
+        </div>
+        <div>
+            <div class="form-floating">
+                <input type="text" name="txtUsername" id="txtUsername" class="form-control" required>
+                <label for="txtUsername">Correo Electronico:</label>
+                <br>
+            </div>
+        </div>
+        <div>
+            <div class="form-floating">
+                <input type="password" name="txtPassword" id="txtPassword" class="form-control" required>
+                <label for="txtPassword">Contraseña:</label>
+                <br>
+            </div>
+            <div>
+                <a href="#">¿Olvidaste tu contraseña?</a>
+            </div>
+        </div>
+        <br>
+        <div>
+            <Button class="btn btn-secondary">Ingresar</Button>
+        </div>
+        <br>
+        <div class="g-recaptcha" data-sitekey="6Ley4PklAAAAAOD6OYj2IYy87R6ZLOtdGkIrKQCE"></div>
+    </form>
+</div>
+{% endblock %}
+{% block piePagina %}
+{% include "piePagina.html" %}
+{% endblock %}
