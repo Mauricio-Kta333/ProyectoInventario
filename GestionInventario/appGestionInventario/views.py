@@ -88,7 +88,6 @@ def vistaRegistrarUsuario(request):
 def inicio(request):
     return render(request, "inicio.html")
 
-
 def listaUsuarios(request):
     try:
         usuario = User.objects.all()
@@ -220,15 +219,15 @@ def enviarCorreo(asunto=None,mensaje=None,destinatario=None):
 
 def vistagestionarDevolutivo(request):
     if request.user.is_authenticated:
-        elementosDevolutivos = Devolutivo.objects.all()
-        retorno = {"listaElementosDevolutivos": elementosDevolutivos}
+        devolutivo = Devolutivo.objects.all()
+        retorno = {"listaElementosDevolutivos": devolutivo}
         return render(request,"administrador/gestionarDevolutivo.html", retorno)
     else:
         mensaje = "Debe Iniciar Sesion"
         return render(request,"iniciarSesion.html",{"mensaje":mensaje})
     
 def vistaRegistrarDevolutivo(request):
-    retorno = {"tipoElemento":tipoElemento, "estados": estadosElementos, "depositos":depositos}
+    retorno = {"tipoElemento":tipoElemento, "estados": estadosElementos}
     return render(request, "administrador/registrarDevolutivo.html", retorno)
 
 def registrarDevolutivo(request):
@@ -251,7 +250,7 @@ def registrarDevolutivo(request):
         with transaction.atomic():
             cantidad = Elemento.objects.all().count()
             codigoElemento = tipoElemento.upper() + str(cantidad).rjust(6,'0')
-            elemento = Elemento(eleCodigo = codigoElemento,eleNombre = nombre, eleTipo = tipoElemento,
+            elemento = Elemento(eleCodigo = codigoElemento, eleNombre = nombre, eleTipo = tipoElemento,
                                 eleEstado = estado)
             elemento.save()
             
@@ -265,7 +264,6 @@ def registrarDevolutivo(request):
             elementoDevolutivo.save()
             estado = True
             mensaje = f"Elemento Devolutivo registrado satisfactoriamente con el codigo {codigoElemento}"
-            return redirect("vistagestionarDevolutivo/")
     except Error as error:
         transaction.rollback()
         mensaje = f"error"
