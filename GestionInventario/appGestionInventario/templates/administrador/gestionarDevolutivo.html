@@ -8,39 +8,39 @@
 {% block contenido %}
 <div class="w-75" style="margin: 0 auto;">
     <div>
-        <h1 class="text-center">GESTIONAR USUARIOS</h1>
+        <h1 class="text-center">GESTIONAR ELEMENTOS DEVOLUTIVOS</h1>
     </div>
     <br>
-    <a href="/vistaRegistrarUsuario/"><button class="btn btn-success" style="margin-left: 125px;">Agregar</button></a>
+    <a href="/vistaRegistrarDevolutivo/"><button class="btn btn-success" style="margin-left: 125px;">Agregar</button></a>
     <br>
     <br>
     <table class="table table-bordered w-75" style="margin: 0 auto">
         <thead class="bg-danger text-white fw-bold">
             <tr>
-                <th>Nombre Completo</th>
-                <th>Correo Electronico</th>
+                <th>Codigo Propio</th>
+                <th>Nombre</th>
+                <th>Descripcion</th>
                 <th>Tipo</th>
+                <th>Estado</th>
                 <th>Foto</th>
                 <th>Accion</th>
             </tr>
         </thead>
         <tbody>
-            {% for usuario in listaUsuarios %}
+            {% for dev in listaElementosDevolutivos %}
             <tr>
-                {% comment %} {% if({{usuario.first_name}} is empty)  %}
-                    <td>{{usuario.username}}</td>
-                {% else %} {% endcomment %}
-                    <td>{{usuario.first_name}} {{usuario.last_name}}</td>
-                    <td>{{usuario.email}}</td>
-                    <td>{{usuario.userTipo}}</td>
+                    <td>{{dev.devElemento.eleCodigo}}</td>
+                    <td>{{dev.devElemento.eleNombre}}</td>
+                    <td>{{dev.devDescripcion}}</td>
+                    <td class="text-center">{{dev.devElemento.eleTipo}}</td>
+                    <td class="text-center">{{dev.devElemento.eleEstado}}</td>
                     <td class="text-center"> 
-                        <img src="../../media/{{usuario.userFoto}}" width="50" height="50" alt="">
+                        <img src="../../media/{{devolutivo.devFoto}}" width="50" height="50" alt="">
                     </td>
                         <td class="text-center" style="font-size: 4vh;">
-                            <a href="/consultarUsuario/{{usuario.id}}">
+                            <a href="/consultarDevolutivo/{{dev.devElemento.id}}">
                                 <i class="fa fa-edit text-warning"></i>
                             </a>
-                            <i class="fa fa-trash text-danger" onclick="abrirModalEliminar('{{usuario.id}}')"></i>
                         </td>
                 {% comment %} {% endif %} {% endcomment %}
             </tr>

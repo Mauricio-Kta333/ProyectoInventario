@@ -1,10 +1,13 @@
-{% extends "index.html" %}
+{% extends "administrador/indexAdmin.html" %}
 {% block encabezado %}
     {% include "encabezado.html" %}
 {% endblock %}
+{% block menu %}
+    {% include "administrador/menuAdmin.html" %}
+{% endblock %}
 {% block contenido %}
     <h2 class="text-center">MODULO ADMINISTRADOR</h2>
-
+    <button></button>
 {% endblock %}
 {% block piePagina %}
 {% include "piePagina.html" %}
