@@ -1,6 +1,12 @@
-img .logo{
+.logo{
     width: 50%;
     height: 200px;
+}
+
+img{
+    width: 100%;
+    height: 50px;
+
     background-size: 20%;
     background-position: center;
     
