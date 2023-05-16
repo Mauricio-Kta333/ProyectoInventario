@@ -8,18 +8,23 @@ estadosMantenimiento = [
     ('Requiere Reparación','Requiere Reparación'),('Requiere Remplazo','Requiere Remplazo'),
     ('Defecto Corregido','Defecto Corregido'),
 ]
+
 tipoProveedor = [
     ('Persona Júridica',"Persona Júridica"),('Persona Natural', 'Persona Natural'),
 ]
+
 tipoUsuario = [
     ('Aprendiz',"Aprendiz"),('Instructor', 'Instructor'),('Administrativo',"Administrativo"),
 ]
+
 tipoElemento = [
     ('HER','Herramientas'),('MAQ','Maquinaria'),('EQU','Equipos'),('MAT','Materiales'),  
 ]
+
 estadosElementos = [
     ('Bueno','Bueno'),('Regular','Regular'),('Malo','Malo'),    
 ]
+
 estadoSolicitudes = [
     ('Solicitada','Solicitada'),('Aprobada','Aprobada'),('Rechazada','Rechazada'),
     ('Atendida','Atendida'),('Cancelada','Cancelada')
@@ -96,7 +101,6 @@ class UbicacionFisica(models.Model):
     
     def __str__(self)->str:
         return f"{self.ubiElemento}-{self.ubiDeposito}-{self.ubiEstante}-{self.ubiEntrepano}-{self.ubiLocker}"
-
 
 class Devolutivo(models.Model):
     devPlacaSena = models.CharField(max_length=45, unique=True,db_comment="Código Inventario SENA")
@@ -237,6 +241,4 @@ class Mantenimento(models.Model):
     
     def __str__(self)->str:
         return f"{self.manElemento}-{self.manEstado}"
-    
-
     
