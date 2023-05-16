@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.db import Error, transaction
 from django.contrib.auth.models import *
 from appGestionInventario.models import *
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout
 from django.contrib import auth
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
@@ -80,24 +80,31 @@ def registrarUsuario(request):
     return render(request, "administrador/registrarUsuario.html", retorno)
 
 def vistaRegistrarUsuario(request):
-    roles = Group.objects.all()
-    tipos = tipoUsuario
-    retorno = {"roles":roles,"user":None, "tipoUsuario":tipos}
-    return render(request, "administrador/registrarUsuario.html", retorno)
+    if request.user.is_authenticated:
+        roles = Group.objects.all()
+        tipos = tipoUsuario
+        retorno = {"roles":roles,"user":None, "tipoUsuario":tipos}
+        return render(request, "administrador/registrarUsuario.html", retorno)
+    else:
+        mensaje = "Debe Iniciar Sesion"
+        return render(request,"iniciarSesion.html",{"mensaje":mensaje})
 
 def inicio(request):
     return render(request, "inicio.html")
 
-
 def listaUsuarios(request):
-    try:
-        usuario = User.objects.all()
-        mensaje = ""
-    except Error as error:
-        mensaje = f"Problemas al listar los usuarios {error}"
-    
-    retorno = {"mensaje": mensaje, "listaUsuarios":usuario}
-    return render(request, "administrador/gestionarUsuarios.html", retorno)
+    if request.user.is_authenticated:
+        try:
+            usuario = User.objects.all()
+            mensaje = ""
+            retorno = {"mensaje": mensaje, "listaUsuarios":usuario}
+            return render(request,"administrador/gestionarUsuarios.html", retorno)
+        except Error as error:
+            mensaje = "Debe iniciar Sesion"
+            return render(request, "iniciarSesion.html",{"mensaje":mensaje})
+    else:
+        mensaje = "Debe Iniciar Sesion"
+        return render(request,"iniciarSesion.html",{"mensaje":mensaje})
 
 def consultarUsuario(request, id):
     try:
@@ -151,8 +158,8 @@ def eliminarUsuario(request, id):
     retorno = {"mensaje":mensaje}
     return redirect("/vistagestionarUsuario/", retorno)
 
-def vistaLogin(request):
-    return render(request, "iniciarSesion.html")
+# def vistaLogin(request):
+#     return render(request, "iniciarSesion.html")
 
 def login(request):
     # Validar el recaptcha 
@@ -193,6 +200,10 @@ def login(request):
 def inicioAdministrador(request):
     if request.user.is_authenticated:
         return render(request, "administrador/inicio.html")
+    else:
+        mensaje = "Debe iniciar sesion"
+        retorno = {"mensaje":mensaje}
+        return render(request,'iniciarSesion.html', retorno) 
 
 def inicioAsistente(request):
     if request.user.is_authenticated:
@@ -228,8 +239,12 @@ def vistagestionarDevolutivo(request):
         return render(request,"iniciarSesion.html",{"mensaje":mensaje})
     
 def vistaRegistrarDevolutivo(request):
-    retorno = {"tipoElemento":tipoElemento, "estados": estadosElementos, "depositos":depositos}
-    return render(request, "administrador/registrarDevolutivo.html", retorno)
+    if request.user.is_authenticated:
+        retorno = {"tipoElemento":tipoElemento, "estados": estadosElementos, "depositos":ubicacionDeposito }
+        return render(request, "administrador/registrarDevolutivo.html", retorno)
+    else:
+        mensaje = "Debe Iniciar Sesion"
+        return render(request,"iniciarSesion.html",{"mensaje":mensaje})
 
 def registrarDevolutivo(request):
     estado = False
@@ -240,34 +255,116 @@ def registrarDevolutivo(request):
         serial = request.POST.get("txtSerial", False)
         marca = request.POST.get("txtMarca", False)
         valorUnitario = int(request.POST["txtValor"])
-        estado = request.POST["cbEstado"]      
+        estado = request.POST["cbEstado"]
         nombre = request.POST["txtNombre"]
         descripcion = request.POST["txtDescripcion"]
         deposito = request.POST["cbDeposito"]
         estante = request.POST.get("numEstante",False)
         entrePano = request.POST.get("numEntrepano", False)
         locker = request.POST.get("numLocker",False)
-        archivo = request.FILES.get("Fimagen", False)
+        archivo = request.FILES.get("FimagenDev", False)
         with transaction.atomic():
+            # Obtener cuantos elementos se han registrado
             cantidad = Elemento.objects.all().count()
-            codigoElemento = tipoElemento.upper() + str(cantidad).rjust(6,'0')
-            elemento = Elemento(eleCodigo = codigoElemento,eleNombre = nombre, eleTipo = tipoElemento,
+            # Crear un codigo a partir de la cantidad ajustando el inicio
+            codigoElemento = tipoElemento.upper() + str(cantidad+1).rjust(6,'0')
+            # Crear el elemento
+            elemento = Elemento(eleCodigo = codigoElemento,eleNombre = nombre, eleTipo = tipoElemento, 
                                 eleEstado = estado)
+            # Guardar el elemento en la base de datos
             elemento.save()
-            
-            ubicacion = UbicacionFisica(ubiDeposito = deposito, ubiEstante = estante, ubiEntrepano = entrePano,
-                                        ubiLocker = locker)
+            # Crear objeto ubicacion fisica del elemento
+            ubicacion = UbicacionFisica(ubiDeposito=deposito,ubiEstante=estante,ubiEntrepano=entrePano,ubiLocker=locker,ubiElemento=elemento)
+            # Registrar en la base de datos la ubicacion fisica del elemento
             ubicacion.save()
-            
-            elementoDevolutivo = Devolutivo(devPlacaSena = placaSena, devSerial = serial, devDescripcion = descripcion,
-                                            devMarca = marca, devFechaIngresoSENA = fechaInventario, devValor = valorUnitario,
-                                            devFoto = archivo, devElemento = elemento)
+            # Crear el devolutivo
+            elementoDevolutivo = Devolutivo(devPlacaSena=placaSena,devSerial=serial,
+                                            devDescripcion=descripcion,devMarca=marca,
+                                            devFechaIngresoSENA=fechaInventario,
+                                            devValor=valorUnitario,devFoto=archivo,
+                                            devElemento=elemento, devUbicacion=ubicacion)
             elementoDevolutivo.save()
             estado = True
-            mensaje = f"Elemento Devolutivo registrado satisfactoriamente con el codigo {codigoElemento}"
-            return redirect("vistagestionarDevolutivo/")
+            mensaje = f'Elemento Devolutivo registrado satisfactoriamente con el codigo {codigoElemento}'
     except Error as error:
         transaction.rollback()
-        mensaje = f"error"
-    retorno = {"mensaje":mensaje, "devolutivo":elementoDevolutivo, "estado":estado}
-    return render(request, "administrador/registrarDevolutivo.html", retorno)
+        mensaje = "Error"
+    retorno = {"mensaje":mensaje,"devolutivo":elementoDevolutivo,"estado":estado}
+    return render (request,"administrador/registrarDevolutivo.html",retorno)
+
+def consultarDevolutivo(request, id, idUbi, idDevo):
+    try:
+        elemento = Elemento.objects.get(id=id)
+        ubicacion = UbicacionFisica.objects.get(id=idUbi)
+        devolu = Devolutivo.objects.get(id=idDevo)
+        tiposEle =tipoElemento
+        estados = estadosElementos
+        ubicacionFis = ubicacionDeposito
+        mensaje = ""
+        fecha_sena = devolu.devFechaIngresoSENA.strftime('%Y-%m-%d')
+        valorEntero = int(devolu.devValor)
+    except Error as error:
+        mensaje = f"Problemas {error}"
+    retorno = {"mensaje": mensaje, "elemento": elemento,"ubicacion":ubicacion ,"devolutivo":devolu,"tiposEle": tiposEle, "estados": estados, "depositos":ubicacionFis, "fecha_sena": fecha_sena, "valorEntero": valorEntero}
+    return render(request, "administrador/editarAdmin.html", retorno)
+
+def actualizarDevolutivo(request):
+    idElemento = int(request.POST["id"])
+    idUbicacion = int(request.POST["idUbi"])
+    idDevolutivo = int(request.POST["idDevo"])
+    placaSena = request.POST["txtPlacaSena"]
+    fechaInventario = request.POST["txtFechaSena"]
+    tipoElemento = request.POST["cbTipoEle"]
+    serial = request.POST.get("txtSerial", False)
+    marca = request.POST.get("txtMarca", False)
+    valor = float(request.POST["txtValor"])
+    estado = request.POST["cbEstado"]
+    nombre = request.POST["txtNombre"]
+    descripcion = request.POST["txtDescripcion"]
+    deposito = request.POST["cbDeposito"]
+    estante = request.POST.get("numEstante",False)
+    entrePano = request.POST.get("numEntrepano", False)
+    locker = request.POST.get("numLocker",False)
+    archivo = request.FILES.get("Fimagen", False)
+    try:
+        elemento = Elemento.objects.get(id=idElemento)
+        cantidad = Elemento.objects.all().count()
+        codigo = tipoElemento.upper() + str(cantidad+1).rjust(6,'0')
+        elemento.eleCodigo = codigo
+        elemento.eleNombre = nombre
+        elemento.eleTipo = tipoElemento
+        elemento.eleEstado = estado
+        elemento.save()
+        # Se empieza a manejar la ubicacion de acuerdo a lo guardado
+        ubicacion = UbicacionFisica.objects.get(id=idUbicacion)
+        ubicacion.ubiDeposito = deposito
+        ubicacion.ubiEstante = estante
+        ubicacion.ubiEntrepano = entrePano
+        ubicacion.ubiLocker = locker
+        ubicacion.ubiElemento = elemento
+        ubicacion.save()
+        #Se empieza a manejar el devolutivo de acuerdo a lo guardado
+        eleDevolu = Devolutivo.objects.get(id=idDevolutivo)
+        eleDevolu.devPlacaSena = placaSena
+        eleDevolu.devSerial = serial
+        eleDevolu.devDescripcion = descripcion
+        eleDevolu.devMarca = marca
+        eleDevolu.devFechaIngresoSENA = fechaInventario
+        eleDevolu.devValor = valor
+        eleDevolu.devElemento = elemento
+        eleDevolu.devUbicacion = ubicacion
+        if(archivo):
+            eleDevolu.devFoto  = archivo
+        else:
+            eleDevolu.devFoto = eleDevolu.devFoto
+        eleDevolu.save()
+        mensaje  = "Elemento actualizado correctamente"
+        return redirect("/vistagestionarDevolutivo/")
+    except Error as error:
+        mensaje = f"Problemas al realizar el proceso de actualizar el elemento {error}"
+    retorno = {"mensaje":mensaje, "elemento": eleDevolu }
+    return render (request, "administrador/editarAdmin.html", retorno)
+
+def cerrarSesion(request):
+    logout(request)
+    return redirect('/inicioSesion/')

@@ -1,5 +1,6 @@
 $(function () {
     $("#Fimagen").on("change", mostrarImagen);
+    $("#FimagenDev").on("change", mostrarImagenDevolutivo);
     // $("#txtcodigo").on("change", validarCodigo);
 })
 
@@ -12,15 +13,35 @@ function mostrarImagen(evt) {
     let extension = nombre.split('.').pop()
     extension = extension.toLowerCase()
     if (extension != "jpg") {
-        Swal.fire('Cargar imagen Producto', 'Solo se permiten archivos JPG', 'warning')
+        Swal.fire('Cargar imagen', 'Solo se permiten archivos JPG', 'warning')
         $("#Fimagen").val("")
     } else if (tamaño > "200000") {
-        Swal.fire('Cargar imagen Producto', 'Solo se permiten archivos menores a 50k', 'warning')
+        Swal.fire('Cargar imagen ', 'Solo se permiten archivos menores a 50k', 'warning')
         $("#Fimagen").val("")
     } else {
-        $("#imagenproducto").attr("src", url)
+        $("#imagenusuario").attr("src", url)
     }
        
+}
+
+function mostrarImagenDevolutivo(evt) {
+  const archivos = evt.target.files
+  const archivos2 = archivos[0]
+  const url = URL.createObjectURL(archivos2)
+  let nombre = archivos[0].name
+  let tamaño = archivos[0].size
+  let extension = nombre.split('.').pop()
+  extension = extension.toLowerCase()
+  if (extension != "jpg") {
+      Swal.fire('Cargar imagen', 'Solo se permiten archivos JPG', 'warning')
+      $("#FimagenDev").val("")
+  } else if (tamaño > "200000") {
+      Swal.fire('Cargar imagen ', 'Solo se permiten archivos menores a 50k', 'warning')
+      $("#FimagenDev").val("")
+  } else {
+      $("#imagendevo").attr("src", url)
+  }
+     
 }
 
 // function validarCodigo(evt) {
@@ -44,3 +65,4 @@ function abrirModalEliminar(idUsario) {
       }
     })
   }
+  

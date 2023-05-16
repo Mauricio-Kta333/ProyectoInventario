@@ -1,4 +1,4 @@
-{% extends "administrador/indexAdmin.html" %}
+{% extends "index.html" %}
 {% block encabezado %}
 {% include "encabezado.html" %}
 {% endblock %}
@@ -6,123 +6,132 @@
 {% include "administrador/menuAdmin.html" %}
 {% endblock %}
 {% block contenido %}
-<div class="w-50 mt-3" style="margin: 0 auto;">
-    <form id="frmProducto" action="/registrarDevolutivo/" method="post" enctype="multipart/form-data" class="was-validated">
+<div>
+    <form id="frmDevolutivo" action="/registrarDevolutivo/" method="post" enctype="multipart/form-data"
+        class="was-validated">
         {% csrf_token %}
         <div>
             <h3 class="text-center">REGISTRAR ELEMENTOS DEVOLUTIVOS</h3>
             <br>
-        </div>
-        <div class="form-floating">
-            <select class="form-select" name="cbTipoEle" id="cbTipoEle"  required>
-                <option value="0">Seleccione</option>
-                {% for tipo in tipoElemento %}
-                    <option value="{{tipo.0}}">{{tipo.1}}</option>
+            <div class="row">
+                <div class="form-floating col-4">
+                    <select class="form-select" name="cbTipoEle" id="cbTipoEle" required>
+                        <option value="0">Seleccione</option>
+                        {% for tipo in tipoElemento %}
+                        <option value="{{tipo.0}}">{{tipo.1}}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="cbTipoElemento">Tipo Elemento:</label>
+                    <br>
+                </div>
+                <div class="form-floating col-4">
+                    <input type="date" name="txtFechaSena" id="txtFechaSena" class="form-control" required>
+                    <label for="txtFechaSena">Fecha Inventario SENA: </label>
+                    <br>
+                </div>
+                <div class="form-floating col-4">
+                    <input type="text" name="txtPlacaSena" id="txtPlacaSena" class="form-control" required>
+                    <label for="txtPlacaSena">Placa SENA: </label>
+                    <br>
+                </div>
 
-                {% endfor %}
-            </select>
-            <label for="cbElemento">Tipo de Elemento</label>
-            <br>
-        </div>
-        <div class="form-floating">
-            <input type="Date" name="txtFechaSena" id="txtFechaSena" class="form-control" required>
-            <label for="txtFechaSena">Fecha Inventario SENA: </label>
-            <br>
-        </div>
-        <div class="form-floating">
-            <input type="text" name="txtPlacaSena" id="txtPlacaSena" class="form-control" required>
-            <label for="txtPlacaSena">Placa Sena </label>
-            <br>
-        </div>
-        <div class="form-floating">
-            <input type="text" name="txtSerial" id="txtSerial" class="form-control">
-            <label for="txtSerial">Serial </label>
-            <br>
-        </div>
-        <div class="form-floating">
-            <input type="text" name="txtMarca" id="txtMarca" class="form-control">
-            <label for="txtMarca">Marca </label>
-            <br>
-        </div>
-        <div class="form-floating">
-            <input type="text" name="txtValor" id="txtValor" class="form-control" required>
-            <label for="txtValor">Valor Unitario</label>
-            <br>
-        </div>
-        <div class="form-floating">
-            <select class="form-select" name="cbEstado" id="cbEstado"  required>
-                <option value="0">Seleccione</option>
-                {% for tipo in estados %}
-                    <option value="{{tipo.0}}">{{tipo.1}}</option>
+                <div class="form-floating col-3">
+                    <input type="text" name="txtSerial" id="txtSerial" class="form-control">
+                    <label for="txtSerial">Serial: </label>
+                    <br>
+                </div>
+                <div class="form-floating col-3">
+                    <input type="text" name="txtMarca" id="txtMarca" class="form-control">
+                    <label for="txtMarca">Marca: </label>
+                    <br>
+                </div>
+                <div class="form-floating col-3">
+                    <input type="number" name="txtValor" id="txtValor" class="form-control" required>
+                    <label for="txtValorUnitario">Valor Unitario: </label>
+                    <br>
+                </div>
+                <div class="form-floating col-3">
+                    <select class="form-select" name="cbEstado" id="cbEstado" required>
+                        <option value="0">Seleccione</option>
+                        {% for estado in estados %}
+                        <option value="{{estado.0}}">{{estado.1}}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="cbEstado">Estado:</label>
+                    <br>
+                </div>
 
-                {% endfor %}
-            </select>
-            <label for="cbEstado">Deposito</label>
-            <br>
-        </div>
-        <div class="form-floating">
-            <input type="text" name="txtNombre" id="txtNombre" class="form-control" required>
-            <label for="txtNombre">Nombre </label>
-            <br>
-        </div>
-        <div class="form-floating">
-            <textarea name="txtDescripcion" id="txtDescripcion" cols="30" rows="10"></textarea>
-            <label for="txtDescripcion">Descripcion </label>
-            <br>
-        </div>
-        <div>
-            <h3 class="text-center">UBICACION</h3>
-        </div>
-        <div class="form-floating">
-            <select class="form-select" name="cbDeposito" id="cbDeposito"  required>
-                <option value="0">Seleccione</option>
-                {% for depo in deos %}
-                    <option value="{{depo.0}}">{{depo.1}}</option>
+                <div class="form-floating">
+                    <input type="text" name="txtNombre" id="txtNombre" class="form-control" required>
+                    <label for="txtNombre">Nombre: </label>
+                    <br>
+                </div>
+                <div class="form-floating">
+                    <textarea name="txtDescripcion" id="txtDescripcion" cols="173" rows="2"></textarea>
+                    <label for="txtDescripcion">Descripcion </label>
+                    <br>
+                </div>
+                <div>
+                    <h3 class="text-center">UBICACIÓN</h3>
+                </div>
 
-                {% endfor %}
-            </select>
-            <label for="cbDeposito">Deposito</label>
-            <br>
-        </div>
-        <div class="form-floating">
-            <input type="number" name="numEstante" id="numEstante" class="form-control" value="0">
-            <label for="numEstante">Estante:</label>
-            <br>
-        </div>
-        <div class="form-floating">
-            <input type="number" name="numEntrepano" id="numEntrepano" class="form-control" value="0">
-            <label for="numEntrepano">Entrepaño:</label>
-            <br>
-        </div>
-        <div class="form-floating">
-            <input type="number" name="numLocker" id="numLocker" class="form-control" value="0">
-            <label for="numLocker">Locker:</label>
-            <br>
-        </div>
-        <div class="form-floating">
-            <input type="file" name="Fimagen" id="Fimagen" class="form-control" accept=".jpg">
-            <label for="Fimagen">Imagen del producto: (jpg)</label>
-        </div>
-        <div class="text-center">
-            <br>
-            <img id="imagenproducto" src="" alt="" width="100" height="100">
-        </div>
-        <div class="text-center">
-            <br>
-            <button class="btn btn-success mt.3">Registrar</button>
-        </div>
+                <div class="form-floating col-3">
+                    <select class="form-select" name="cbDeposito" id="cbDeposito">
+                        <option value="0">Seleccione el deposito</option>
+                        {% for depo in depositos %}
+                        <option value="{{depo.0}}">{{depo.1}}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="cbDeposito">Deposito:</label>
+                    <br>
+                </div>
+                <div class="form-floating col-3">
+                    <input type="number" name="numEstante" id="numEstante" class="form-control">
+                    <label for="txtEstante">Estante: </label>
+                    <br>
+                </div>
+                <div class="form-floating col-3">
+                    <input type="number" name="numEntrepano" id="numEntrepano" class="form-control">
+                    <label for="txtEntrepano">Entrepaño: </label>
+                    <br>
+                </div>
+                <div class="form-floating col-3">
+                    <input type="number" name="numLocker" id="numLocker" class="form-control">
+                    <label for="txtLocker">Locker: </label>
+                    <br>
+                </div>
+
+                <div class="form-floating">
+                    <input type="file" name="FimagenDev" id="FimagenDev" class="form-control" accept=".jpg">
+                    <label for="FimagenDev">Imagen del Elemento: (jpg)</label>
+                </div>
+
+                <div class="text-center">
+                    <br>
+                    <img id="imagendevo" src="" alt="" width="100" height="100">
+                </div>
+                <br>
+
+            </div>
+            <div class="text-center">
+                <br>
+                <button class="btn btn-outline-secondary mt.3 ">Registrar</button>
+                <a href="/vistagestionarDevolutivo/"><button type="button"
+                        class="btn btn-outline-danger mt.3">Cancelar</button></a>
+            </div>
+
     </form>
     <div>
         {% if mensaje %}
-            {% if estado %}
-                <script>
-                    Swal.fire('Producto', '{{mensaje}}', 'success')
-                </script>
+        {% if estado %}
+        <script>
+            Swal.fire('Elemento', '{{mensaje}}', 'success')
+        </script>
         {% else %}
-                <script>
-                    Swal.fire('Producto', '{{mensaje}}', 'error')
-                </script>
-            {% endif %}
+        <script>
+            Swal.fire('Elemento', '{{mensaje}}', 'error')
+        </script>
+        {% endif %}
         {% endif %}
     </div>
 </div>

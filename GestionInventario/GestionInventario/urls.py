@@ -23,7 +23,7 @@ from django.conf import settings
 
 urlpatterns = [
     path("inicio/", views.inicio),
-    path("login/", views.vistaLogin),
+    # path("login/", views.vistaLogin),
     path("inicioSesion/", views.login),
     path('admin/', admin.site.urls),
     path('vistaRegistrarUsuario/',views.vistaRegistrarUsuario),
@@ -38,6 +38,9 @@ urlpatterns = [
     path("vistagestionarDevolutivo/", views.vistagestionarDevolutivo),
     path('vistaRegistrarDevolutivo/', views.vistaRegistrarDevolutivo),
     path('registrarDevolutivo/', views.registrarDevolutivo),
+    path('consultarDevolutivo/<int:id>/<int:idUbi>/<int:idDevo>/', views.consultarDevolutivo),
+    path('actualizarDevolutivo/', views.actualizarDevolutivo),
+    path('cerrarSesion/', views.cerrarSesion),
     
 ]
 

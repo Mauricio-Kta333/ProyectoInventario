@@ -18,11 +18,15 @@ tipoElemento = [
     ('HER','Herramientas'),('MAQ','Maquinaria'),('EQU','Equipos'),('MAT','Materiales'),  
 ]
 estadosElementos = [
-    ('Bueno','Bueno'),('Bueno','Regular'),('Bueno','Malo'),    
+    ('Bueno','Bueno'),('Regular','Regular'),('Malo','Malo'),    
 ]
 estadoSolicitudes = [
     ('Solicitada','Solicitada'),('Aprobada','Aprobada'),('Rechazada','Rechazada'),
     ('Atendida','Atendida'),('Cancelada','Cancelada')
+]
+
+ubicacionDeposito = [
+    (1,'Deposito 1'),(2,'Deposito 2'),(3,'Deposito 3')
 ]
 
 class Ficha(models.Model):
@@ -81,7 +85,19 @@ class Elemento(models.Model):
     
     def __str__(self)->str:
         return f"{self.eleCodigo}-{self.eleNombre}"
+class UbicacionFisica(models.Model):
+    ubiElemento  = models.ForeignKey(Elemento,on_delete=models.PROTECT,db_comment="Hace referencia al elemento")
+    ubiDeposito = models.SmallIntegerField(choices=ubicacionDeposito, db_comment="Número de bodega: 1,2,3,4..")    
+    ubiEstante = models.SmallIntegerField(null=True,db_comment="Número de bodega: 1,2,3,4..")
+    ubiEntrepano = models.SmallIntegerField(null=True,db_comment="Número de Entrepaño: 1,2,3,4..")
+    ubiLocker = models.SmallIntegerField(null=True,db_comment="Número de locker: 1,2,3,4..")
+    fechaHoraCreacion  = models.DateTimeField(auto_now_add=True,db_comment="Fecha y hora del registro")
+    fechaHoraActualizacion = models.DateTimeField(auto_now=True,db_comment="Fecha y hora última actualización")
     
+    def __str__(self)->str:
+        return f"{self.ubiElemento}-{self.ubiDeposito}-{self.ubiEstante}-{self.ubiEntrepano}-{self.ubiLocker}"
+
+
 class Devolutivo(models.Model):
     devPlacaSena = models.CharField(max_length=45, unique=True,db_comment="Código Inventario SENA")
     devSerial = models.CharField(max_length=45, null=True,db_comment="Seríal del elemento devolutivo")
@@ -92,7 +108,8 @@ class Devolutivo(models.Model):
                                    db_comment="Valor del elemento registrado inventario SENA")    
     devFoto = models.FileField(upload_to=f"elementos/", null=True, blank=True,
                                 db_comment="Foto del Elemento Devolutivo")    
-    devElemento = models.ForeignKey(Elemento,on_delete=models.PROTECT,db_comment="Hace relación al elemento FK")    
+    devElemento = models.ForeignKey(Elemento,on_delete=models.PROTECT,db_comment="Hace relación al elemento FK")
+    devUbicacion = models.ForeignKey(UbicacionFisica, on_delete=models.PROTECT,null=True ,db_comment='Hace relacion a la ubicacion FK')
     fechaHoraCreacion  = models.DateTimeField(auto_now_add=True,db_comment="Fecha y hora del registro")
     fechaHoraActualizacion = models.DateTimeField(auto_now=True,db_comment="Fecha y hora última actualización")
     
@@ -221,15 +238,5 @@ class Mantenimento(models.Model):
     def __str__(self)->str:
         return f"{self.manElemento}-{self.manEstado}"
     
-class UbicacionFisica(models.Model):
-    ubiElemento  = models.ForeignKey(Elemento,on_delete=models.PROTECT,db_comment="Hace referencia al elemento")
-    ubiDeposito = models.SmallIntegerField(db_comment="Número de bodega: 1,2,3,4..")    
-    ubiEstante = models.SmallIntegerField(null=True,db_comment="Número de bodega: 1,2,3,4..")
-    ubiEntrepano = models.SmallIntegerField(null=True,db_comment="Número de Entrepaño: 1,2,3,4..")
-    ubiLocker = models.SmallIntegerField(null=True,db_comment="Número de locker: 1,2,3,4..")
-    fechaHoraCreacion  = models.DateTimeField(auto_now_add=True,db_comment="Fecha y hora del registro")
-    fechaHoraActualizacion = models.DateTimeField(auto_now=True,db_comment="Fecha y hora última actualización")
-    
-    def __str__(self)->str:
-        return f"{self.ubiElemento}-{self.ubiDeposito}-{self.ubiEstante}-{self.ubiEntrepano}-{self.ubiLocker}"
+
     

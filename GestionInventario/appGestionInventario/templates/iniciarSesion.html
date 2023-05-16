@@ -2,6 +2,9 @@
 {% block encabezado %}
     {% include "encabezado.html" %}
 {% endblock %}
+{% block menu %}
+    {% include "menu.html" %}
+{% endblock %}
 {% block contenido %}
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <div class="w-100 mt-4 vstack d-flex align-items-center">
@@ -11,6 +14,7 @@
             <h5 class="text-center">INGRESAR AL SISTEMA</h5>
         </div>
         <div>
+            <br>
             <div class="form-floating">
                 <input type="text" name="txtUsername" id="txtUsername" class="form-control" required>
                 <label for="txtUsername">Correo Electronico:</label>
@@ -24,16 +28,29 @@
                 <br>
             </div>
             <div>
-                <a href="#">¿Olvidaste tu contraseña?</a>
+                <a class="d-flex justify-content-center" href="#">¿Olvidaste tu contraseña?</a>
             </div>
         </div>
         <br>
-        <div>
-            <Button class="btn btn-secondary">Ingresar</Button>
+        <div class="d-flex justify-content-center">
+            <button class="d-flex justify-content-center btn btn-outline-secondary">Ingresar</button>
         </div>
         <br>
         <div class="g-recaptcha" data-sitekey="6Ley4PklAAAAAOD6OYj2IYy87R6ZLOtdGkIrKQCE"></div>
     </form>
+    <div>
+        {% if mensaje %}
+            {% if estado %}
+                <script>
+                    Swal.fire('Inicio', '{{mensaje}}', 'success')
+                </script>
+        {% else %}
+                <script>
+                    Swal.fire('Inicio', '{{mensaje}}', 'warning')
+                </script>
+            {% endif %}
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
 {% block piePagina %}
