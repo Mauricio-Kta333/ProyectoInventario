@@ -41,6 +41,14 @@ urlpatterns = [
     path('consultarDevolutivo/<int:id>/<int:idUbi>/<int:idDevo>/', views.consultarDevolutivo),
     path('actualizarDevolutivo/', views.actualizarDevolutivo),
     path('cerrarSesion/', views.cerrarSesion),
+    path('vistaRegistrarMaterial/', views.vistaRegistrarMaterial),
+    path('registrarMaterial/', views.registrarMaterial),
+    path('vistaRegistrarEntradaMaterial/', views.vistaEntradaMaterial),
+    path('registrarEntradaMaterial/', views.registrarEntradaMaterial),
+    path('vistaRegistrarProveedor/', views.vistaRegistrarProveedor),
+    path("registrarProveedor/", views.registrarProveedor),
+    path('vistaRegistrarUnidad/', views.vistaRegistrarUnidad),
+    path("registrarUnidad/", views.registrarUnidad),
     
 ]
 

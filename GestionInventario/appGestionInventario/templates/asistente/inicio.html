@@ -1,1 +1,26 @@
-Hola
+{% extends "index.html" %}
+{% block encabezado %}
+    {% include "encabezado.html" %}
+{% endblock %}
+{% block menu %}
+    {% include "asistente/menu.html" %}
+{% endblock %}
+{% block contenido %}
+    <br>
+    <h2>¡Bienvenido al módulo de asistente!</h2>
+    <br><br>
+    <h5>Estimado {{ usuario.first_name }} {{ usuario.last_name}},</h5> 
+    <br><br>
+       <p> Nos complace darte la bienvenida al módulo de asistente, donde desempeñarás un papel fundamental en la atención y soporte a nuestros usuarios. Tu labor consistirá en brindar asistencia personalizada, resolver consultas y ofrecer soluciones eficientes a los problemas que puedan surgir.
+        Como asistente, tendrás acceso a herramientas especializadas y recursos de apoyo que te permitirán desempeñar tu trabajo de manera efectiva. Trabajarás en estrecha colaboración con el equipo de atención al cliente y desempeñarás un papel clave en la satisfacción de nuestros usuarios.
+    
+        Valoramos tu compromiso y habilidades para ofrecer un servicio excepcional. Tu capacidad para comunicarte de manera clara, comprender las necesidades de nuestros usuarios y resolver problemas de manera rápida y efectiva será fundamental para mantener una experiencia positiva para todos.
+        
+        Explora las funcionalidades del módulo de asistente y no dudes en acercarte a tu equipo o supervisor si tienes alguna pregunta o necesitas orientación adicional. Estamos comprometidos en brindarte el apoyo necesario para que alcances tus metas y brindes un excelente servicio a nuestros usuarios.
+        <br><br>
+        ¡Gracias por tu dedicación y bienvenido nuevamente al módulo de asistente!
+    </p>
+{% endblock %}
+{% block pie_pagina %}
+{% include "pie_pagina.html" %}
+{% endblock %}

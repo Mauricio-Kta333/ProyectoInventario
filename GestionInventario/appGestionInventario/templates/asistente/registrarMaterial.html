@@ -1,0 +1,101 @@
+{% extends "index.html" %}
+{% block encabezado %}
+{% include "encabezado.html" %}
+{% endblock %}
+{% block menu %}
+{% include "asistente/menu.html" %}
+{% endblock %}
+{% block contenido %}
+<div>
+    <form id="frmDevolutivo" action="/registrarMaterial/" method="post" enctype="multipart/form-data"
+        class="was-validated">
+        {% csrf_token %}
+        <div>
+            <br>
+            <h3 class="text-center">REGISTRAR MATERIAL DE CONSUMO</h3>
+            <br>
+            <div class="row">
+                <div class="form-floating col-4">
+                    <input type="text" name="txtNameMat" id="txtNameMat" class="form-control" required>
+                    <label for="txtNameMat">Nombre: </label>
+                    <br>
+                </div>
+                <div class="form-floating col-4">
+                    <input type="text" name="txtMarcaMat" id="txtMarcaMat" class="form-control">
+                    <label for="txtMarcaMaterial">Marca: </label>
+                    <br>
+                </div>
+                <div class="form-floating col-4">
+                    <select class="form-select" name="cbEstadoMat" id="cbEstadoMat" required>
+                        <option value="0">Seleccione</option>
+                        {% for estado in estados %}
+                        <option value="{{estado.0}}">{{estado.1}}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="cbEstadoMat">Estado:</label>
+                    <br>
+                </div>
+                <div class="form-floating">
+                    <textarea name="txtDescripcionMat" id="txtDescripcionMat" class="form-control" cols="173" rows="2"></textarea>
+                    <label for="txtDescripcionMat">Descripcion: </label>
+                    <br>
+                </div>
+                
+                <div>
+                    <h3 class="text-center">UBICACIÓN</h3>
+                </div>
+
+                <div class="form-floating col-3">
+                    <select class="form-select" name="cbDepositoMat" id="cbDepositoMat">
+                        <option value="0">Seleccione el deposito</option>
+                        {% for depo in depositos %}
+                        <option value="{{depo.0}}">{{depo.1}}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="cbDepositoMaterial">Deposito:</label>
+                    <br>
+                </div>
+                <div class="form-floating col-3">
+                    <input type="number" name="numEstanteMat" id="numEstanteMat" value="0" class="form-control">
+                    <label for="txtEstante">Estante: </label>
+                    <br>
+                </div>
+                <div class="form-floating col-3">
+                    <input type="number" name="numEntrepanoMat" id="numEntrepanoMat" value="0" class="form-control">
+                    <label for="txtEntrepano">Entrepaño: </label>
+                    <br>
+                </div>
+                <div class="form-floating col-3">
+                    <input type="number" name="numLockerMat" id="numLockerMat" value="0" class="form-control">
+                    <label for="txtLocker">Locker: </label>
+                    <br>
+                </div>
+                <br>
+
+            </div>
+            <div class="text-center">
+                <br>
+                <button class="btn btn-outline-secondary mt.3 ">Registrar</button>
+                <a href="/vistagestionarMaterial/"><button type="button"
+                        class="btn btn-outline-danger mt.3">Cancelar</button></a>
+            </div>
+
+    </form>
+    <div>
+        {% if mensaje %}
+        {% if estado %}
+        <script>
+            Swal.fire('Elemento', '{{mensaje}}', 'success')
+        </script>
+        {% else %}
+        <script>
+            Swal.fire('Elemento', '{{mensaje}}', 'error')
+        </script>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+{% block pie_pagina %}
+{% include "pie_pagina.html" %}
+{% endblock %}

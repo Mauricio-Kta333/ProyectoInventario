@@ -1,0 +1,46 @@
+{% extends "index.html" %}
+{% block encabezado %}
+{% include "encabezado.html" %}
+{% endblock %}
+{% block menu %}
+{% include "administrador/menuAdmin.html" %}
+{% endblock %}
+{% block contenido %}
+<div>
+    <form id="frmUnidad" action="/registrarUnidad/" method="post" enctype="multipart/form-data" class="was-validated">
+        {% csrf_token %}
+        <div>
+            <br>
+            <h3 class="text-center">REGISTRAR UNIDAD</h3>
+            <br>
+        </div>
+        <div class="row">
+            <div class="form-floating">
+                <input type="text" name="txtUnidad" id="txtUnidad" class="form-control" required>
+                <label for="txtUnidad">Unidad:</label>
+                <br>
+            </div>
+        </div>
+        <div class="text-center">
+            <br>
+            <button class="btn btn-outline-success mt.3">Registrar</button>
+        </div>
+    </form>
+    <div>
+        {% if mensaje %}
+            {% if estado %}
+                <script>
+                    Swal.fire('Unidad', '{{mensaje}}', 'success')
+                </script>
+        {% else %}
+                <script>
+                    Swal.fire('Unidad', '{{mensaje}}', 'error')
+                </script>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+{% block pie_pagina %}
+{% include "pie_pagina.html" %}
+{% endblock %}

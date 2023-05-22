@@ -1,4 +1,4 @@
-{% extends "indexA.html" %}
+{% comment %} {% extends "index.html" %}
 {% block encabezado %}
 {% include "encabezado.html" %}
 {% endblock %}
@@ -84,7 +84,7 @@
                     <br>
                 </div>
                 <div class="form-floating">
-                    <textarea name="txtDescripcion" id="txtDescripcion" cols="173" rows="2">{{devolutivo.devDescripcion}}</textarea>
+                    <textarea name="txtDescripcion" id="txtDescripcion" class="form-control" cols="173" rows="2">{{devolutivo.devDescripcion}}</textarea>
                     <label for="txtDescripcion">Descripcion </label>
                     <br>
                 </div>                
@@ -145,6 +145,6 @@
     </div>
 </div>
 {% endblock %}
-{% block piePagina %}
-{% include "piePagina.html" %}
-{% endblock %}
+{% block pie_pagina %}
+{% include "pie_Pagina.html" %}
+{% endblock %} {% endcomment %}

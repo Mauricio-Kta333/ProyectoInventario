@@ -1,0 +1,169 @@
+{% extends "index.html" %}
+{% block encabezado %}
+{% include "encabezado.html" %}
+{% endblock %}
+{% block menu %}
+{% include "asistente/menu.html" %}
+{% endblock %}
+{% block contenido %}
+<div>
+    <form id="frmEntradaMaterial" action="/registrarEntradaMaterial/" method="post" enctype="multipart/form-data"
+        class="was-validated">
+        {% csrf_token %}
+        <div>
+            <br>
+            <h3 class="text-center">REGISTRAR ENTRADA DE MATERIALES</h3>
+            <br>
+            <div class="row">
+                <div class="form-floating col-6">
+                    <input type="text" name="txtCodigoFac" id="txtCodigoFac" class="form-control" required>
+                    <label for="txtCodigoFac">Código Factura: </label>
+                    <br>
+                </div>
+                <div class="form-floating col-6">
+                    <input type="datetime-local" name="datFechaEntre" id="datFechaEntre" class="form-control" re>
+                    <label for="datFechaEntre">Fecha Entrega: </label>
+                    <br>
+                </div>
+                <div class="form-floating col-4">
+                    <input type="text" name="txtEntrega" id="txtEntrega" class="form-control">
+                    <label for="txtEntrega">Entregado Por: </label>
+                    <br>
+                </div>
+                <div class="form-floating col-4">
+                    <select class="form-select" name="cbProveedor" id="cbProveedor" required>
+                        <option value="0">Seleccione</option>
+                        {% for pro in listaProveedor %}
+                        <option value="{{pro.id}}">{{pro.proNombre}}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="cbProveedor">Proveedor:</label>
+                    <br>
+                </div>
+                <div class="form-floating col-4">
+                    <select class="form-select" name="cbRecibidoPor" id="cbRecibidoPor" required>
+                        <option value="0">Seleccione</option>
+                        {% for usuario in listaUsuario %}
+                        {% if usuario.id > 1 %}
+                        <option value="{{usuario.id}}">{{usuario.first_name}} {{usuario.last_name}}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                    <label for="cbRecibidoPor">Recibido Por:</label>
+                    <br>
+                </div>
+                <div class="form-floating">
+                    <textarea name="txtObservacion" id="txtObservacion" class="form-control" cols="173"
+                        rows="2"></textarea>
+                    <label for="txtObservacion">Observaciones: </label>
+                    <br>
+                </div>
+                <div class="form-floating">
+                    <button class="btn btn-outline-secondary" id="btnAnexarMaterial">Anexar Material</button>
+                </div>
+                <div id="modalAnexarMaterial" class="modal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Anexar Material</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="mb-3">
+                                        <label for="cbMaterial" class="form-label">Material:</label>
+                                        <select class="form-select" name="cbMaterial" id="cbMaterial">
+                                            <option value="0">Seleccione</option>
+                                            {% for mat in listaMaterial %}
+                                            <option value="{{mat.id}}">{{mat.matElemento.eleNombre}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="numCantidad" class="form-label">Cantidad:</label>
+                                        <input type="number" name="numCantidad" id="numCantidad" class="form-control">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="numPrecio" class="form-label">Precio Unitario:</label>
+                                        <input type="number" name="numPrecio" id="numPrecio" class="form-control">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="cbUnidadMed" class="form-label">Unidad:</label>
+                                        <select class="form-select" name="cbUnidadMed" id="cbUnidadMed">
+                                            <option value="0">Seleccione</option>
+                                            {% for unidad in listaUnidad %}
+                                            <option value="{{unidad.id}}">{{unidad.uniNombre}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="cbEstadoEntra" class="form-label">Estado:</label>
+                                        <select class="form-select" name="cbEstadoEntra" id="cbEstadoEntra">
+                                            <option value="0">Seleccione</option>
+                                            {% for est in listaEstado %}
+                                            <option value="{{est.0}}">{{est.1}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-outline-secondary">Agregar Detalle</button>
+                                <button type="button" class="btn btn-outline-danger">Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div>
+                    <h2 class="text-center">Detalle Entrada Materiales</h2>
+                </div>
+                <table class="table table-striped table-hover" id="datosTablaMateriales">
+                    <thead class="bg-dark text-white fw-bold">
+                        <tr>
+                            <th>Codigo</th>
+                            <th>Material</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
+                            <th>Unidad Medida</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+                <br>
+                {% for material in materiales %}
+                    <script>cargarMateriales("{{material.id}}", "{{material.matElemento.eleCodigo}}", "{{material.matElemento.eleNombre}}");</script>
+                {% endfor %}
+                {% for unidad in unidadesMedida %}
+                    <script>cargarUnidadesMedida("{{unidad.id}}", "{{unidad.uniNombre}}");</script>
+                {% endfor %}
+            </div>
+            <div class="text-center">
+                <br>
+                <button class="btn btn-outline-success mt.3 ">Finalizar Registro</button>
+            </div>
+
+    </form>
+    <div>
+        {% if mensaje %}
+        {% if estado %}
+        <script>
+            Swal.fire('Elemento', '{{mensaje}}', 'success')
+        </script>
+        {% else %}
+        <script>
+            Swal.fire('Elemento', '{{mensaje}}', 'error')
+        </script>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+{% block pie_pagina %}
+{% include "pie_Pagina.html" %}
+{% endblock %}

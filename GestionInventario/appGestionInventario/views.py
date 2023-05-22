@@ -9,6 +9,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 import threading
 from smtplib import SMTPException
+from django.http import JsonResponse
 import random
 import string, os, urllib, json
 
@@ -31,7 +32,7 @@ def registrarUsuario(request):
         apellido = request.POST["txtApellido"]
         correo = request.POST["txtCorreo"]
         tipo = request.POST["cbTipo"]
-        foto = request.FILES.get("Fimagen", False)
+        foto = request.FILES.get("Fimagen", None)
         idRol = int(request.POST["cbRol"])
         with transaction.atomic():
             #crear un objeto de tipo user 
@@ -115,7 +116,7 @@ def consultarUsuario(request, id):
     except Error as error:
         mensaje = f"Problemas {error}"
     retorno = {"mensaje": mensaje, "usuario": usuario, "tipoUsuario": tipos,"roles": roles}
-    return render(request, "administrador/editar.html", retorno)
+    return render(request, "administrador/editarUsuario.html", retorno)
 
 def actualizarUsuario(request):
     idUsuario = int(request.POST["id"])
@@ -141,7 +142,7 @@ def actualizarUsuario(request):
         mensaje = f"Problemas al realizar el proceso de actualizar el usuario {error}"
     rol = Group.objects.all()
     retorno = {"mensaje":mensaje, "roles":rol, "usuario": usuario}
-    return render (request, "administrador/editar.html", retorno)
+    return render (request, "administrador/editarUsuario.html", retorno)
 
 def eliminarUsuario(request, id):
     try: 
@@ -198,20 +199,34 @@ def login(request):
         return render(request,"iniciarSesion.html",{"mensaje":mensaje})
     
 def inicioAdministrador(request):
-    if request.user.is_authenticated:
-        return render(request, "administrador/inicio.html")
+    if request.user.groups.filter(name='Administrador').exists():
+        usuario = request.user
+        retorno = {"usuario": usuario}
+        return render(request, "administrador/inicio.html", retorno)
     else:
-        mensaje = "Debe iniciar sesion"
-        retorno = {"mensaje":mensaje}
-        return render(request,'iniciarSesion.html', retorno) 
+        mensaje = "Debe iniciar sesión"
+        retorno = {"mensaje": mensaje}
+        return render(request, 'iniciarSesion.html', retorno)
 
 def inicioAsistente(request):
-    if request.user.is_authenticated:
-        return render(request, "asistente/inicio.html")
+    if request.user.groups.filter(name='Asistente').exists():
+        usuario = request.user
+        retorno = {"usuario": usuario}
+        return render(request, "asistente/inicio.html", retorno)
+    else:
+        mensaje = "Debe iniciar sesión"
+        retorno = {"mensaje": mensaje}
+        return render(request, 'iniciarSesion.html', retorno)
     
 def inicioInstructor(request):
-    if request.user.is_authenticated:
-        return render(request, "instructor/inicio.html")
+    if request.user.groups.filter(name='Instructor').exists():
+        usuario = request.user
+        retorno = {"usuario": usuario}
+        return render(request, "instructor/inicio.html", retorno)
+    else:
+        mensaje = "Debe iniciar sesión"
+        retorno = {"mensaje": mensaje}
+        return render(request, 'iniciarSesion.html', retorno)
     
 def enviarCorreo(asunto=None,mensaje=None,destinatario=None):
     remitente = settings.EMAIL_HOST_USER
@@ -233,7 +248,7 @@ def vistagestionarDevolutivo(request):
     if request.user.is_authenticated:
         elementosDevolutivos = Devolutivo.objects.all()
         retorno = {"listaElementosDevolutivos": elementosDevolutivos}
-        return render(request,"administrador/gestionarDevolutivo.html", retorno)
+        return render(request,"asistente/gestionarDevolutivo.html", retorno)
     else:
         mensaje = "Debe Iniciar Sesion"
         return render(request,"iniciarSesion.html",{"mensaje":mensaje})
@@ -241,7 +256,7 @@ def vistagestionarDevolutivo(request):
 def vistaRegistrarDevolutivo(request):
     if request.user.is_authenticated:
         retorno = {"tipoElemento":tipoElemento, "estados": estadosElementos, "depositos":ubicacionDeposito }
-        return render(request, "administrador/registrarDevolutivo.html", retorno)
+        return render(request, "asistente/registrarDevolutivo.html", retorno)
     else:
         mensaje = "Debe Iniciar Sesion"
         return render(request,"iniciarSesion.html",{"mensaje":mensaje})
@@ -252,17 +267,17 @@ def registrarDevolutivo(request):
         placaSena = request.POST["txtPlacaSena"]
         fechaInventario = request.POST["txtFechaSena"]
         tipoElemento = request.POST["cbTipoEle"]
-        serial = request.POST.get("txtSerial", False)
-        marca = request.POST.get("txtMarca", False)
+        serial = request.POST.get("txtSerial", None)
+        marca = request.POST.get("txtMarca", None)
         valorUnitario = int(request.POST["txtValor"])
         estado = request.POST["cbEstado"]
         nombre = request.POST["txtNombre"]
         descripcion = request.POST["txtDescripcion"]
         deposito = request.POST["cbDeposito"]
-        estante = request.POST.get("numEstante",False)
-        entrePano = request.POST.get("numEntrepano", False)
-        locker = request.POST.get("numLocker",False)
-        archivo = request.FILES.get("FimagenDev", False)
+        estante = request.POST.get("numEstante",None)
+        entrePano = request.POST.get("numEntrepano", None)
+        locker = request.POST.get("numLocker",None)
+        archivo = request.FILES.get("FimagenDev", None)
         with transaction.atomic():
             # Obtener cuantos elementos se han registrado
             cantidad = Elemento.objects.all().count()
@@ -290,7 +305,7 @@ def registrarDevolutivo(request):
         transaction.rollback()
         mensaje = "Error"
     retorno = {"mensaje":mensaje,"devolutivo":elementoDevolutivo,"estado":estado}
-    return render (request,"administrador/registrarDevolutivo.html",retorno)
+    return render (request,"asistente/registrarDevolutivo.html",retorno)
 
 def consultarDevolutivo(request, id, idUbi, idDevo):
     try:
@@ -306,7 +321,7 @@ def consultarDevolutivo(request, id, idUbi, idDevo):
     except Error as error:
         mensaje = f"Problemas {error}"
     retorno = {"mensaje": mensaje, "elemento": elemento,"ubicacion":ubicacion ,"devolutivo":devolu,"tiposEle": tiposEle, "estados": estados, "depositos":ubicacionFis, "fecha_sena": fecha_sena, "valorEntero": valorEntero}
-    return render(request, "administrador/editarAdmin.html", retorno)
+    return render(request, "asistente/editarDevolutivo.html", retorno)
 
 def actualizarDevolutivo(request):
     idElemento = int(request.POST["id"])
@@ -363,8 +378,137 @@ def actualizarDevolutivo(request):
     except Error as error:
         mensaje = f"Problemas al realizar el proceso de actualizar el elemento {error}"
     retorno = {"mensaje":mensaje, "elemento": eleDevolu }
-    return render (request, "administrador/editarAdmin.html", retorno)
+    return render (request, "asistente/editarDevolutivo.html", retorno)
 
 def cerrarSesion(request):
     logout(request)
     return redirect('/inicioSesion/')
+
+def vistaRegistrarMaterial(request):
+    unidadMed = UnidadMedida.objects.all()
+    retorno = {"unidadMed": unidadMed, "estados": estadosElementos, "depositos": ubicacionDeposito}
+    return render (request, "asistente/registrarMaterial.html", retorno)
+
+def registrarMaterial(request):
+    estado = False
+    try:
+        nombre = request.POST["txtNameMat"]
+        marca = request.POST.get("txtMarcaMat", None)
+        descripcion = request.POST.get("txtDescripcionMat", None)
+        estado = request.POST["cbEstadoMat"]
+        deposito = request.POST["cbDepositoMat"]
+        estante = request.POST.get("numEstanteMat", None)
+        entrepano = request.POST.get("numEntrepanoMat", None)
+        locker = request.POST.get("numLockerMat", None)
+        with transaction.atomic():
+            cantidad = Elemento.objects.all().filter(eleTipo = 'MAT').count()
+            codigoElemento = "MAT" + str(cantidad+1).rjust(6,'0')
+
+            elemento = Elemento(eleCodigo = codigoElemento,eleNombre = nombre, eleTipo = "MAT", 
+                                eleEstado = estado)
+            elemento.save()
+
+            material = Material(matReferencia = descripcion, matMarca = marca,
+                                matElemento = elemento)
+            material.save()
+
+            ubicacion = UbicacionFisica(ubiDeposito = deposito, ubiEstante = estante, ubiEntrepano = entrepano, ubiLocker = locker, ubiElemento = elemento)
+            
+            ubicacion.save()
+            estado =True
+            mensaje = f"Material registrado correctamente con el codigo {codigoElemento}"
+    except Error as error:
+        transaction.rollback()
+        mensaje = f"Error"
+    retorno = {"mensaje":mensaje, "material": material, "estado": estado}
+    return render(request, "asistente/registrarMaterial.html", retorno)
+
+def vistaRegistrarProveedor(request):
+    Listaproveedor = tipoProveedor
+    retorno = {"Listaproveedor":Listaproveedor}
+    return render(request, "administrador/registrarProveedor.html", retorno)
+
+def registrarProveedor(request):
+    estado = False
+    try:
+        tipoProveedorFor = request.POST["cbTipoPro"]
+        identificacion = request.POST["txtIdentificacion"]
+        nombreProveedor = request.POST["txtNombrePro"]
+        representante = request.POST.get("txtNombreRepre", None)
+        telefono = request.POST.get("numTelefono", None)
+        with transaction.atomic():
+            proveedor = Proveedor(proTipo = tipoProveedorFor, proIdentificacion = identificacion,
+                                  proNombre = nombreProveedor, proRepresentanteLegal = representante,
+                                  proTelefono = telefono)
+            proveedor.save()
+            estado = True
+            mensaje = f"Proveedor registrado correctamente"
+    except Error as error:
+        transaction.rollback()
+        mensaje = "Error"
+    retorno = {"mensaje": mensaje, "proveedor": proveedor,"estado":estado}
+    return render (request, "administrador/registrarProveedor.html", retorno)
+
+def vistaRegistrarUnidad(request):
+    return render(request, "administrador/registrarUnidadMedida.html")
+
+def registrarUnidad(request):
+    estado = False
+    try:
+        nombreUni = request.POST["txtUnidad"]
+        with transaction.atomic():
+            unidad = UnidadMedida(uniNombre = nombreUni)
+            unidad.save()
+            estado = True
+            mensaje = f"Unidad agregada correctamente"
+    except Error as error:
+        transaction.rollback()
+        mensaje = f"Error"
+    retorno = {"mensaje":mensaje, "unidad":unidad, "estado":estado}
+    return render(request, "administrador/registrarUnidadMedida.html", retorno)
+            
+def vistaEntradaMaterial(request): 
+    proveedores = Proveedor.objects.all()
+    usuarios = User.objects.all()
+    materiales = Material.objects.all()
+    unidadesMed = UnidadMedida.objects.all()
+    estados = estadosElementos
+    
+    retorno = {"listaProveedor":proveedores, "listaUsuario":usuarios, "listaMaterial":materiales, "listaUnidad":unidadesMed, "listaEstado": estados}
+    return render(request, "asistente/registrarEntradaMat.html", retorno)
+
+def registrarEntradaMaterial(request):
+    if request.method == 'POST':
+        try:
+            with transaction.atomic():            
+                estado = False
+                codigoFactura = request.POST['codigoFactura']
+                entregadoPor = request.POST['entregadoPor']
+                idProveedor = int(request.POST['proveedor'])
+                recibidoPor = int(request.POST['recibidoPor'])
+                fechahora = request.POST.get('fechahora',None)
+                observaciones = request.POST['observaciones']
+                userRecibe = User.objects.get(pk=recibidoPor)
+                proveedor = Proveedor.objects.get(pk=idProveedor)
+                entradaMaterial = EntradaMaterial (entNumeroFactura = codigoFactura, entFechaHora = fechahora,
+                                                    entUsuarioRecibe= userRecibe, entEntregadoPor = entregadoPor,
+                                                    entProveedor = proveedor, entObservaciones=observaciones)
+                entradaMaterial.save()
+                detalleMateriales = json.loads(request.POST['detalle'])
+                for detalle in detalleMateriales:
+                    material = Material.objects.get(id=int(detalle['idMaterial']))
+                    cantidad = int(detalle['cantidad'])
+                    precio = int(detalle['precio'])
+                    estado = detalle['estado']
+                    unidadMedida = UnidadMedida.objects.get(pk=int(detalle['idUnidadMedida']))
+                    detalleEntrada = DetalleEntradaMaterial (detEntradaMaterial = entradaMaterial,
+                                                        detMaterial = material, detUnidadMedida = unidadMedida,
+                                                        detCantidad=cantidad, detPrecioUnitario = precio, devEstado=estado)
+                    detalleEntrada.save()
+                estado=True
+                mensaje="Se ha registrado la entrada de Materiales correctamente"
+        except Error as error:
+            transaction.rollback()
+            mensaje= f"{error}"
+        retorno={"estado":estado, "mensaje":mensaje}
+        return JsonResponse(retorno)

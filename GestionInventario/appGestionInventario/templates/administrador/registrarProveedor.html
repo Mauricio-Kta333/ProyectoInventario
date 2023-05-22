@@ -1,0 +1,74 @@
+{% extends "index.html" %}
+{% block encabezado %}
+{% include "encabezado.html" %}
+{% endblock %}
+{% block menu %}
+{% include "administrador/menuAdmin.html" %}
+{% endblock %}
+{% block contenido %}
+<div>
+    <form id="frmProveedor" action="/registrarProveedor/" method="post" enctype="multipart/form-data" class="was-validated">
+        {% csrf_token %}
+        <div>
+            <br>
+            <h3 class="text-center">REGISTRAR PROVEEDOR</h3>
+            <br>
+        </div>
+        <div class="row">
+            <div class="form-floating col-4">
+                <select class="form-select" name="cbTipoPro" id="cbTipoPro"  required>
+                    <option value="0">Seleccione</option>
+                    {% for pro in Listaproveedor %}
+                        <option value="{{pro.0}}">{{pro.1}}</option>
+
+                    {% endfor %}
+                </select>
+                <label for="cbTipoPro">Tipo de Proveedor:</label>
+                <br>
+            </div>
+            <div class="form-floating col-4">
+                <input type="text" name="txtIdentificacion" id="txtIdentificacion" class="form-control" required>
+                <label for="txtIdentificacion">Identificacion:</label>
+                <br>
+            </div>
+            <div class="form-floating col-4">
+                <input type="text" name="txtNombrePro" id="txtNombrePro" class="form-control" required>
+                <label for="txtNombrePro">Nombre del Proveedor:</label>
+                <br>
+            </div>
+            <div class="form-floating col-6">
+                <input type="text" name="txtNombreRepre" id="txtNombreRepre" class="form-control" required>
+                <label for="txtNombreRepre">Representante legal:</label>
+                <br>
+            </div>
+            <div class="form-floating col-6">
+                <input type="number" name="numTelefono" id="numTelefono" class="form-control">
+                <label for="numTelefono">Telefono:</label>
+                <br>
+            </div>
+        </div>
+        <div class="text-center">
+            <br>
+            <button class="btn btn-outline-success mt.3">Registrar</button>
+            <a href="/vistagestionarUsuario/"><button type="button"
+                class="btn btn-outline-danger mt.3">Cancelar</button></a>
+        </div>
+    </form>
+    <div>
+        {% if mensaje %}
+            {% if estado %}
+                <script>
+                    Swal.fire('Proveedor', '{{mensaje}}', 'success')
+                </script>
+        {% else %}
+                <script>
+                    Swal.fire('Proveedor', '{{mensaje}}', 'error')
+                </script>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+{% block pie_pagina %}
+{% include "pie_pagina.html" %}
+{% endblock %}
