@@ -27,7 +27,7 @@
                     <br>
                 </div>
                 <div class="form-floating col-6">
-                    <input type="text" name="txtNombreProyecto" id="txtNombreProyecto" class="form-control" >
+                    <input type="text" name="txtNombreProyecto" id="txtNombreProyecto" class="form-control">
                     <label for="txtNombreProyecto">Proyecto a utilizar los materiales: </label>
                     <br>
                 </div>
@@ -48,7 +48,8 @@
                     <br>
                 </div>
                 <div class="form-floating">
-                    <button class="btn btn-outline-secondary" type="button" id="btnAnexarMaterial2">Agregar Material</button>
+                    <button class="btn btn-outline-secondary" type="button" id="btnAnexarMaterial2">Agregar
+                        Material</button>
                 </div>
     </form>
     <div id="modalAnexarMaterial" class="modal">
@@ -112,10 +113,10 @@
     </table>
     <br>
     {% for elemen in listaElemento %}
-        <script>cargarMaterialSolicitud("{{elemen.id}}", "{{elemen.eleCodigo}}", "{{elemen.eleNombre}}");</script>
+    <script>cargarMaterialSolicitud("{{elemen.id}}", "{{elemen.eleCodigo}}", "{{elemen.eleNombre}}");</script>
     {% endfor %}
     {% for unid in listaUnidad %}
-        <script>cargarUnidadesMedida("{{unid.id}}", "{{unid.uniNombre}}");</script>
+    <script>cargarUnidadesMedida("{{unid.id}}", "{{unid.uniNombre}}");</script>
     {% endfor %}
 </div>
 <div class="text-center">

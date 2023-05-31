@@ -41,10 +41,10 @@ function registroSolicitudMaterial(){
         "fechaRequerida": $("#datFechaRequiere").val(),
         "fechaFinal": $("#datFechaFinal").val(),
         "observaciones": $("#txtObservacionS").val(),
-        "detalleElemento": JSON.stringify(solicitudMateriales),
+        "detalleSolicitud": JSON.stringify(solicitudMateriales),
     }
     $.ajax({
-        url: "/registrarEntradaMaterial/",
+        url: "/registrarSolicitud/",
         data: datos,
         type: 'post',
         dataType: 'json',

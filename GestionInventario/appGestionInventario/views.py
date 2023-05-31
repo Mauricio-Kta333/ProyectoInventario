@@ -238,7 +238,7 @@ def enviarCorreo(asunto=None,mensaje=None,destinatario=None):
         'remitente':remitente
     })
     try:
-        correo = EmailMultiAlternatives(asunto,mensaje,remitente,[destinatario])
+        correo = EmailMultiAlternatives(asunto,mensaje,remitente,destinatario)
         correo.attach_alternative(contenido, 'text/html')
         correo.send(fail_silently=True)
     except SMTPException as error:
@@ -402,7 +402,7 @@ def registrarMaterial(request):
         locker = request.POST.get("numLockerMat",False)
         with transaction.atomic():
             cantidad = Elemento.objects.all().filter(eleTipo='MAT').count()
-            codigoElemento = "MAT" + str(cantidad+2).rjust(6,'0')
+            codigoElemento = "MAT" + str(cantidad+1).rjust(6,'0')
             
             elemento = Elemento(eleCodigo = codigoElemento, eleNombre = nombre, eleTipo = "MAT",
                                 eleEstado = estado)
@@ -554,25 +554,43 @@ def registrarSolicitudMaterial(request):
                 fechaSalida = request.POST['fechaFinal']
                 observaciones = request.POST['observaciones']
                 fichaaLlevarMaterial = Ficha.objects.get(pk=ficha)
-                usuarioSol = request.user
-                estadoSolicitud = estadoSolicitudes
                 solicitudMaterial = SolicitudElemento(solProyecto = nombreProyecto, solFicha = fichaaLlevarMaterial,
-                                                      solUsuario = usuarioSol,
-                                                    solFechaHoraRequerida= fechaRequiere, solEstado = estadoSolicitud,
+                                                      solUsuario = request.user,
+                                                    solFechaHoraRequerida= fechaRequiere, solEstado = "Solicitada",
                                                     solObservaciones = observaciones)
                 solicitudMaterial.save()
-                detalleElemento = json.loads(request.POST['detalleElemento'])
-                for detalle in detalleElemento:
+                detalleSolicitud = json.loads(request.POST['detalleSolicitud'])
+                for detalle in detalleSolicitud:
                     elemento = Elemento.objects.get(id=int(detalle['idSolicitud']))
                     cantidad = int(detalle['cantidad'])
-                    estado = detalle['estado']
                     unidadMedida = UnidadMedida.objects.get(pk=int(detalle['idUnidadMedida']))
                     detalleSolicitud = DetalleSolicitud(detElemento = elemento,
-                                                        detSolicitud = estado, detUnidadMedida = unidadMedida,
+                                                        detSolicitud = solicitudMaterial, detUnidadMedida = unidadMedida,
                                                         detCantidadRequerida=cantidad)
                     detalleSolicitud.save()
-                estado=True
-                mensaje="Se ha registrado la solicitud de Material correctamente"
+                    usuarios = User.objects.all()
+                    
+                    for usuario in usuarios:
+                        if usuario.groups.filter(name="Administrador").exists():
+                            correoAdministrador = usuario.email
+                            break
+                    asunto = 'Solicitud en nuestro Sistema CIES-NEIVA'
+                    mensaje =f'Cordial saludo, <b> {request.user.first_name} {request.user.last_name} \
+                    informarle que hemos recibido su solicitud de elementos en nuestro sistema \
+                        del centro de la Industria, la Empresa y los Servicios CIES de la ciudad \
+                            <br><br><b>Datos de la Solicitud</b> \
+                            <br><br><b>Ficha:</b> {fichaaLlevarMaterial.ficCodigo} \
+                            <br><br><b>Programa:</b> {fichaaLlevarMaterial.ficNombre} \
+                            <br><br><b>Proyecto:</b> {nombreProyecto} \
+                            <br><br><b>Fecha Inicial:</b> {fechaRequiere} \
+                            <br><br><b>Fecha Final:</b> {fechaSalida} \
+                            <br><br> El administrador procesara su solicitud para su revision y aprobacion \
+                            <br><br> Lo invitamos a ingresar a nuestro sistema para la revision de sus soliitudes en la url:'
+                    thread = threading.Thread(target=enviarCorreo,
+                                              args=(asunto,mensaje,[request.user.email, correoAdministrador]))
+                    thread.start()
+                    estado=True
+                    mensaje="Se ha registrado la solicitud de Material correctamente"
         except Error as error:
             transaction.rollback()
             mensaje= f"{error}"
