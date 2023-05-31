@@ -6,9 +6,10 @@
 {% include "asistente/menu.html" %}
 {% endblock %}
 {% block contenido %}
+{% load static %}
+<script src="{%static '../static/js/material.js' %}"></script>
 <div>
-    <form id="frmEntradaMaterial" action="/registrarEntradaMaterial/" method="post" enctype="multipart/form-data"
-        class="was-validated">
+    <form id="frmEntradaMaterial" method="post" enctype="multipart/form-data" class="was-validated">
         {% csrf_token %}
         <div>
             <br>
@@ -61,107 +62,105 @@
                 <div class="form-floating">
                     <button class="btn btn-outline-secondary" id="btnAnexarMaterial">Anexar Material</button>
                 </div>
-                <div id="modalAnexarMaterial" class="modal">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Anexar Material</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form>
-                                    <div class="mb-3">
-                                        <label for="cbMaterial" class="form-label">Material:</label>
-                                        <select class="form-select" name="cbMaterial" id="cbMaterial">
-                                            <option value="0">Seleccione</option>
-                                            {% for mat in listaMaterial %}
-                                            <option value="{{mat.id}}">{{mat.matElemento.eleNombre}}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="numCantidad" class="form-label">Cantidad:</label>
-                                        <input type="number" name="numCantidad" id="numCantidad" class="form-control">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="numPrecio" class="form-label">Precio Unitario:</label>
-                                        <input type="number" name="numPrecio" id="numPrecio" class="form-control">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="cbUnidadMed" class="form-label">Unidad:</label>
-                                        <select class="form-select" name="cbUnidadMed" id="cbUnidadMed">
-                                            <option value="0">Seleccione</option>
-                                            {% for unidad in listaUnidad %}
-                                            <option value="{{unidad.id}}">{{unidad.uniNombre}}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="cbEstadoEntra" class="form-label">Estado:</label>
-                                        <select class="form-select" name="cbEstadoEntra" id="cbEstadoEntra">
-                                            <option value="0">Seleccione</option>
-                                            {% for est in listaEstado %}
-                                            <option value="{{est.0}}">{{est.1}}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button class="btn btn-outline-secondary">Agregar Detalle</button>
-                                <button type="button" class="btn btn-outline-danger">Cerrar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div>
-                    <h2 class="text-center">Detalle Entrada Materiales</h2>
-                </div>
-                <table class="table table-striped table-hover" id="datosTablaMateriales">
-                    <thead class="bg-dark text-white fw-bold">
-                        <tr>
-                            <th>Codigo</th>
-                            <th>Material</th>
-                            <th>Cantidad</th>
-                            <th>Precio</th>
-                            <th>Unidad Medida</th>
-                            <th>Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
-                </table>
-                <br>
-                {% for material in materiales %}
-                    <script>cargarMateriales("{{material.id}}", "{{material.matElemento.eleCodigo}}", "{{material.matElemento.eleNombre}}");</script>
-                {% endfor %}
-                {% for unidad in unidadesMedida %}
-                    <script>cargarUnidadesMedida("{{unidad.id}}", "{{unidad.uniNombre}}");</script>
-                {% endfor %}
-            </div>
-            <div class="text-center">
-                <br>
-                <button class="btn btn-outline-success mt.3 ">Finalizar Registro</button>
-            </div>
-
     </form>
-    <div>
-        {% if mensaje %}
-        {% if estado %}
-        <script>
-            Swal.fire('Elemento', '{{mensaje}}', 'success')
-        </script>
-        {% else %}
-        <script>
-            Swal.fire('Elemento', '{{mensaje}}', 'error')
-        </script>
-        {% endif %}
-        {% endif %}
+    <div id="modalAnexarMaterial" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Anexar Material</h5>
+                </div>
+                <div class="modal-body">
+                    <form if="frmModal">
+                        <div class="mb-3">
+                            <label for="cbMaterial" class="form-label">Material:</label>
+                            <select class="form-select" name="cbMaterial" id="cbMaterial">
+                                <option value="0">Seleccione</option>
+                                {% for mat in listaMaterial %}
+                                <option value="{{mat.id}}">{{mat.matElemento.eleCodigo}}-{{mat.matElemento.eleNombre}}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="numCantidad" class="form-label">Cantidad:</label>
+                            <input type="number" name="numCantidad" id="numCantidad" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="numPrecio" class="form-label">Precio Unitario:</label>
+                            <input type="number" name="numPrecio" id="numPrecio" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="cbUnidadMed" class="form-label">Unidad:</label>
+                            <select class="form-select" name="cbUnidadMed" id="cbUnidadMed">
+                                <option value="0">Seleccione</option>
+                                {% for unidad in listaUnidad %}
+                                <option value="{{unidad.id}}">{{unidad.uniNombre}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cbEstadoEntra" class="form-label">Estado:</label>
+                            <select class="form-select" name="cbEstadoEntra" id="cbEstadoEntra">
+                                <option value="0">Seleccione</option>
+                                {% for est in listaEstado %}
+                                <option value="{{est.0}}">{{est.1}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnAgregarMaterialDetalle" name="btnAgregarMaterialDetalle" class="btn btn-outline-secondary">Agregar Detalle</button>
+                    <button type="button" class="btn btn-outline-danger btn-close">Cerrar</button>
+                </div>
+            </div>
+        </div>
     </div>
+
+
+    <div>
+        <h2 class="text-center">Detalle Entrada Materiales</h2>
+    </div>
+    <table class="table table-striped table-hover">
+        <thead class="bg-dark text-white fw-bold">
+            <tr>
+                <th>Codigo</th>
+                <th>Material</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Unidad Medida</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody id="datosTablasMateriales">
+
+        </tbody>
+    </table>
+    <br>
+    {% for material in listaMaterial %}
+        <script>cargarMateriales("{{material.id}}", "{{material.matElemento.eleCodigo}}", "{{material.matElemento.eleNombre}}");</script>
+    {% endfor %}
+    {% for unidad in listaUnidad %}
+        <script>cargarUnidadesMedida("{{unidad.id}}", "{{unidad.uniNombre}}");</script>
+    {% endfor %}
+</div>
+<div class="text-center">
+    <br>
+    <button type="button" id="btnRegistrarDetalle" name="btnRegistrarDetalle" class="btn btn-outline-success mt.3 ">Finalizar Registro</button>
+</div>
+<div>
+    {% if mensaje %}
+    {% if estado %}
+    <script>
+        Swal.fire('Elemento', '{{mensaje}}', 'success')
+    </script>
+    {% else %}
+    <script>
+        Swal.fire('Elemento', '{{mensaje}}', 'error')
+    </script>
+    {% endif %}
+    {% endif %}
+</div>
 </div>
 {% endblock %}
 {% block pie_pagina %}

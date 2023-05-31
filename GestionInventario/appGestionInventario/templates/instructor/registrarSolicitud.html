@@ -1,0 +1,144 @@
+{% extends "index.html" %}
+{% block encabezado %}
+{% include "encabezado.html" %}
+{% endblock %}
+{% block menu %}
+{% include "instructor/menu.html" %}
+{% endblock %}
+{% block contenido %}
+{% load static %}
+<script src="{%static '../static/js/solicitud.js' %}"></script>
+<div>
+    <form id="frmMaterialSolicitado" method="post" enctype="multipart/form-data" class="was-validated">
+        {% csrf_token %}
+        <div>
+            <br>
+            <h3 class="text-center">REGISTRAR SOLICITUD DE MATERIALES</h3>
+            <br>
+            <div class="row">
+                <div class="form-floating col-6">
+                    <select class="form-select" name="cbFicha" id="cbFicha">
+                        <option value="0">Seleccione</option>
+                        {% for ficha in listaFicha %}
+                        <option value="{{ficha.id}}">{{ficha.ficCodigo}}->{{ficha.ficNombre}}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="cbFicha">Ficha - Programa:</label>
+                    <br>
+                </div>
+                <div class="form-floating col-6">
+                    <input type="text" name="txtNombreProyecto" id="txtNombreProyecto" class="form-control" >
+                    <label for="txtNombreProyecto">Proyecto a utilizar los materiales: </label>
+                    <br>
+                </div>
+                <div class="form-floating col-6">
+                    <input type="datetime-local" name="datFechaRequiere" id="datFechaRequiere" class="form-control" re>
+                    <label for="datFechaRequiere">Fecha Requiere los Materiales: </label>
+                    <br>
+                </div>
+                <div class="form-floating col-6">
+                    <input type="datetime-local" name="datFechaFinal" id="datFechaFinal" class="form-control" re>
+                    <label for="datFechaFinal">Fecha Final uso de Materiales:: </label>
+                    <br>
+                </div>
+                <div class="form-floating">
+                    <textarea name="txtObservacionS" id="txtObservacionS" class="form-control" cols="173"
+                        rows="2"></textarea>
+                    <label for="txtObservacionS">Observaciones: </label>
+                    <br>
+                </div>
+                <div class="form-floating">
+                    <button class="btn btn-outline-secondary" type="button" id="btnAnexarMaterial2">Agregar Material</button>
+                </div>
+    </form>
+    <div id="modalAnexarMaterial" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Anexar Solicitud Material</h5>
+                </div>
+                <div class="modal-body">
+                    <form if="frmModalSolicitud">
+                        <div class="mb-3">
+                            <label for="cbElemento" class="form-label">Elemento:</label>
+                            <select class="form-select" name="cbElemento" id="cbElemento">
+                                <option value="0">Seleccione</option>
+                                {% for elemen in listaElemento %}
+                                <option value="{{elemen.id}}">{{elemen.eleCodigo}}-{{elemen.eleNombre}}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="numCantidadE" class="form-label">Cantidad:</label>
+                            <input type="number" name="numCantidadE" id="numCantidadE" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="cbUnidadMedE" class="form-label">Unidad:</label>
+                            <select class="form-select" name="cbUnidadMedE" id="cbUnidadMedE">
+                                <option value="0">Seleccione</option>
+                                {% for unidad in listaUnidad %}
+                                <option value="{{unidad.id}}">{{unidad.uniNombre}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnAgregarMaterialSolicitud" name="btnAgregarMaterialSolicitud"
+                        class="btn btn-outline-secondary">Agregar Detalle</button>
+                    <button type="button" class="btn btn-danger btn-close"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div>
+        <h2 class="text-center">Detalle Solicitud Materiales</h2>
+    </div>
+    <table class="table table-striped table-hover">
+        <thead class="bg-dark text-white fw-bold">
+            <tr class="text-center">
+                <th>Codigo</th>
+                <th>Elemento</th>
+                <th>Cantidad</th>
+                <th>Unidad Medida</th>
+            </tr>
+        </thead>
+        <tbody id="datosTablasSolicitudes">
+
+        </tbody>
+    </table>
+    <br>
+    {% for elemen in listaElemento %}
+        <script>cargarMaterialSolicitud("{{elemen.id}}", "{{elemen.eleCodigo}}", "{{elemen.eleNombre}}");</script>
+    {% endfor %}
+    {% for unid in listaUnidad %}
+        <script>cargarUnidadesMedida("{{unid.id}}", "{{unid.uniNombre}}");</script>
+    {% endfor %}
+</div>
+<div class="text-center">
+    <br>
+    <button type="button" id="btnRegistrarSolicitud" name="btnRegistrarSolicitud"
+        class="btn btn-outline-success mt.3 ">Finalizar Registro</button>
+    <button type="button" class="btn btn-outline-danger mt.3 ">Cancelar</button>
+</div>
+<div>
+    {% if mensaje %}
+    {% if estado %}
+    <script>
+        Swal.fire('Elemento', '{{mensaje}}', 'success')
+    </script>
+    {% else %}
+    <script>
+        Swal.fire('Elemento', '{{mensaje}}', 'error')
+    </script>
+    {% endif %}
+    {% endif %}
+</div>
+</div>
+{% endblock %}
+{% block pie_pagina %}
+{% include "pie_Pagina.html" %}
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "index.html" %}
+{% block encabezado %}
+    {% include "encabezado.html" %}
+{% endblock %}
+{% block menu %}
+    {% include "asistente/menu.html" %}
+{% endblock %}
+{% block contenido %}
+<div class="w-75" style="margin: 0 auto;">
+    <br>
+    <div>
+        <h2 class="text-center">GESTIONAR ELEMENTOS DEVOLUTIVOS</h2>
+    </div>
+    <br>
+    <a href="/vistaRegistrarMaterial/"><button class="btn btn-outline-success" style="margin-left: 125px;">Agregar</button></a>
+    <br>
+    <br>
+    <table class="table table-bordered w-75" style="margin: 0 auto" id="tblElementosDevolutivos" name="tblElementosDevolutivos">
+        <thead class="bg-danger text-white fw-bold">
+            <tr>
+                <td>Codigo</td>
+                <td>Marca</td>
+                <td>Referencia</td>
+                <td>Elemento</td>
+                <td>Tipo Elemento</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mat in listaMateriales%}
+            <tr>
+                    <td>{{mat.matElemento.eleCodigo}}</td>
+                    <td>{{mat.matMarca}}</td>
+                    <td>{{mat.matReferencia}}</td>
+                    <td class="text-center">{{mat.matElemento.eleNombre}}</td>
+                    <td class="text-center">{{mat.matElemento.eleTipo}}</td>
+                {% comment %} {% endif %} {% endcomment %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        cargarDataTable($("#tblElementosDevolutivos"), "Elementos Devolutivos",5)
+    </script>
+</div>
+<div>
+    {% if mensaje %}
+        <script>
+            Swal.fire("Gestion devolutivo",'{{mensaje}}',"info")
+        </script>
+    {% endif %}
+</div>
+{% endblock %}
+{% block pie_pagina %}
+    {% include "pie_pagina.html" %}
+{% endblock %}

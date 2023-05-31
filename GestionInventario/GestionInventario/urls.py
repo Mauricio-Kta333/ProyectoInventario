@@ -49,6 +49,9 @@ urlpatterns = [
     path("registrarProveedor/", views.registrarProveedor),
     path('vistaRegistrarUnidad/', views.vistaRegistrarUnidad),
     path("registrarUnidad/", views.registrarUnidad),
+    path("vistaGestionarMaterial/", views.listaMateriales),
+    path('vistaGestionarSolicitud/', views.listaSolicitud),
+    path('registrarSolicitud/', views.vistaRegistrarSolicitud),
     
 ]
 

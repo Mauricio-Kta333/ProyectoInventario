@@ -1,0 +1,61 @@
+{% extends "index.html" %}
+{% block encabezado %}
+    {% include "encabezado.html" %}
+{% endblock %}
+{% block menu %}
+    {% include "instructor/menu.html" %}
+{% endblock %}
+{% block contenido %}
+<div class="w-75" style="margin: 0 auto;">
+    <br>
+    <div>
+        <h2 class="text-center">GESTIONAR ELEMENTOS DEVOLUTIVOS</h2>
+    </div>
+    <br>
+    <a href="/registrarSolicitud/"><button class="btn btn-outline-success" style="margin-left: 125px;">Agregar</button></a>
+    <br>
+    <br>
+    <table class="table table-bordered w-75" style="margin: 0 auto" id="tblElementosDevolutivos" name="tblElementosDevolutivos">
+        <thead class="bg-danger text-white fw-bold">
+            <tr>
+                <th>Ficha</th>
+                <th>Programa</th>
+                <th>Proyecto</th>
+                <th>Fecha Requerida</th>
+                <th>Estado</th>
+                <th>Detalle</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sol in listaSolicitud %}
+            <tr>
+                    <td>{{dev.devElemento.eleCodigo}}</td>
+                    <td>{{dev.devElemento.eleNombre}}</td>
+                    <td>{{dev.devDescripcion}}</td>
+                    <td class="text-center">{{dev.devElemento.eleTipo}}</td>
+                    <td class="text-center">{{dev.devElemento.eleEstado}}</td>
+                        <td class="text-center" style="font-size: 4vh;">
+                            <a href="/consultarDevolutivo/{{dev.devElemento.id}}/{{dev.devUbicacion.id}}/{{dev.id}}">
+                                <i class="fa fa-edit text-warning"></i>
+                            </a>
+                        </td>
+                {% comment %} {% endif %} {% endcomment %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        cargarDataTable($("#tblElementosDevolutivos"), "Elementos Devolutivos",5)
+    </script>
+</div>
+<div>
+    {% if mensaje %}
+        <script>
+            Swal.fire("Gestion devolutivo",'{{mensaje}}',"info")
+        </script>
+    {% endif %}
+</div>
+{% endblock %}
+{% block pie_pagina %}
+    {% include "pie_pagina.html" %}
+{% endblock %}

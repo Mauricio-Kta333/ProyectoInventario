@@ -1,1 +1,35 @@
-Hola
+{% extends "index.html" %}
+{% block encabezado %}
+{% include "encabezado.html" %}
+{% endblock %}
+{% block menu %}
+{% include "instructor/menu.html" %}
+{% endblock %}
+{% block contenido %}
+<br>
+<h2>¡Bienvenido al módulo de instructor!</h2>
+<br><br>
+<h5>Estimad@ {{ usuario.first_name }} {{ usuario.last_name }},</h5>
+<br><br>
+<p>Nos complace darte la bienvenida al módulo de instructor, donde desempeñarás un papel crucial en la formación y
+    desarrollo de nuestro equipo. Tu experiencia y conocimientos serán fundamentales para guiar y motivar a nuestros
+    asistentes, brindándoles las habilidades necesarias para ofrecer un servicio excepcional a nuestros usuarios.
+    Como instructor, tendrás la oportunidad de compartir tus conocimientos y experiencia con el equipo. Serás
+    responsable de diseñar y facilitar sesiones de capacitación, proporcionando información actualizada sobre nuestros
+    productos, servicios y mejores prácticas de atención al cliente. Además, jugarás un papel clave en el seguimiento y
+    evaluación del desempeño de los asistentes, brindándoles retroalimentación constructiva para su crecimiento
+    profesional.
+    Valoramos tu dedicación y pasión por la enseñanza. Tu capacidad para comunicarte de manera efectiva, adaptar tus
+    métodos de enseñanza a diferentes estilos de aprendizaje y fomentar un ambiente de aprendizaje colaborativo será
+    fundamental para el éxito de nuestros asistentes y, en última instancia, para la satisfacción de nuestros usuarios.
+    Explora las funcionalidades del módulo de instructor y no dudes en acercarte a tu equipo o supervisor si tienes
+    alguna pregunta o necesitas orientación adicional. Estamos comprometidos en brindarte el apoyo necesario para que
+    alcances tus metas y formes a un equipo altamente capacitado.
+    <br><br>
+    ¡Gracias por tu compromiso y bienvenido nuevamente al módulo de instructor!
+</p>
+
+{% endblock %}
+{% block pie_pagina %}
+{% include "pie_pagina.html" %}
+{% endblock %}

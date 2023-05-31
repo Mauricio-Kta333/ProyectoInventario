@@ -4,6 +4,7 @@ $(function() {
   // $("#txtcodigo").on("change", validarCodigo);
   $("#cbTipoPro").on("change", condicionParaRequired);
   $("#btnAnexarMaterial").on("click", ventanaModal);
+  $("#btnAnexarMaterial2").on("click", ventanaModal2);
   $("#modalAnexarMaterial .btn-close").on("click", cerrar);
 });
 
@@ -14,11 +15,27 @@ function ventanaModal(event) {
   if (document.getElementById("frmEntradaMaterial").checkValidity()) {
     // Mostrar la ventana modal
     $("#modalAnexarMaterial").modal("show");
-    // Enfocar en el campo "numCantidad" al mostrar el modal
-    document.getElementById("numCantidad").focus();
-  } else {
+    
+  }else {
     // Enfocar en el primer campo no válido del formulario principal
     var firstInvalidField = document.querySelector("#frmEntradaMaterial :invalid");
+    if (firstInvalidField) {
+      firstInvalidField.focus();
+    }
+  }
+}
+
+function ventanaModal2(event) {
+  event.preventDefault();
+
+  // Validar el formulario antes de mostrar la ventana modal
+  if (document.getElementById("frmMaterialSolicitado").checkValidity()) {
+    // Mostrar la ventana modal
+    $("#modalAnexarMaterial").modal("show");
+
+  }else {
+    // Enfocar en el primer campo no válido del formulario principal
+    var firstInvalidField = document.querySelector("#frmMaterialSolicitado :invalid");
     if (firstInvalidField) {
       firstInvalidField.focus();
     }

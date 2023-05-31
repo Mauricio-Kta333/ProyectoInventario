@@ -393,35 +393,36 @@ def registrarMaterial(request):
     estado = False
     try:
         nombre = request.POST["txtNameMat"]
-        marca = request.POST.get("txtMarcaMat", None)
-        descripcion = request.POST.get("txtDescripcionMat", None)
-        estado = request.POST["cbEstadoMat"]
+        marca = request.POST.get("txtMarcaMat",None)
+        descripcion = request.POST.get("txtDescripcionMat",None)
+        estado = request.POST["cbEstadoMat"]        
         deposito = request.POST["cbDepositoMat"]
-        estante = request.POST.get("numEstanteMat", None)
-        entrepano = request.POST.get("numEntrepanoMat", None)
-        locker = request.POST.get("numLockerMat", None)
+        estante = request.POST.get("numEstanteMat",False)
+        entrepano = request.POST.get("numEntrepanoMat",False)
+        locker = request.POST.get("numLockerMat",False)
         with transaction.atomic():
-            cantidad = Elemento.objects.all().filter(eleTipo = 'MAT').count()
-            codigoElemento = "MAT" + str(cantidad+1).rjust(6,'0')
-
-            elemento = Elemento(eleCodigo = codigoElemento,eleNombre = nombre, eleTipo = "MAT", 
+            cantidad = Elemento.objects.all().filter(eleTipo='MAT').count()
+            codigoElemento = "MAT" + str(cantidad+2).rjust(6,'0')
+            
+            elemento = Elemento(eleCodigo = codigoElemento, eleNombre = nombre, eleTipo = "MAT",
                                 eleEstado = estado)
             elemento.save()
-
+            
             material = Material(matReferencia = descripcion, matMarca = marca,
                                 matElemento = elemento)
             material.save()
-
-            ubicacion = UbicacionFisica(ubiDeposito = deposito, ubiEstante = estante, ubiEntrepano = entrepano, ubiLocker = locker, ubiElemento = elemento)
             
+            ubicacion = UbicacionFisica(ubiDeposito = deposito, ubiEstante = estante,
+                                       ubiEntrepano = entrepano, ubiLocker = locker, ubiElemento = elemento)
             ubicacion.save()
-            estado =True
-            mensaje = f"Material registrado correctamente con el codigo {codigoElemento}"
+            estado = True
+            mensaje = f"Material registrado satisfactoriamente con el codigo {codigoElemento}"
+            retorno = {"mensaje":mensaje,"estado":estado}
     except Error as error:
         transaction.rollback()
         mensaje = f"Error"
-    retorno = {"mensaje":mensaje, "material": material, "estado": estado}
-    return render(request, "asistente/registrarMaterial.html", retorno)
+    retorno = {"mensaje":mensaje,"material":material, "estado":estado}
+    return render(request, "asistente/registrarMaterial.html",retorno)
 
 def vistaRegistrarProveedor(request):
     Listaproveedor = tipoProveedor
@@ -486,7 +487,7 @@ def registrarEntradaMaterial(request):
                 entregadoPor = request.POST['entregadoPor']
                 idProveedor = int(request.POST['proveedor'])
                 recibidoPor = int(request.POST['recibidoPor'])
-                fechahora = request.POST.get('fechahora',None)
+                fechahora = request.POST.get('fechaHora',None)
                 observaciones = request.POST['observaciones']
                 userRecibe = User.objects.get(pk=recibidoPor)
                 proveedor = Proveedor.objects.get(pk=idProveedor)
@@ -507,6 +508,71 @@ def registrarEntradaMaterial(request):
                     detalleEntrada.save()
                 estado=True
                 mensaje="Se ha registrado la entrada de Materiales correctamente"
+        except Error as error:
+            transaction.rollback()
+            mensaje= f"{error}"
+        retorno={"estado":estado, "mensaje":mensaje}
+        return JsonResponse(retorno)
+
+def listaMateriales(request):
+    if request.user.is_authenticated:
+        materiales = Material.objects.all()
+        retorno = {"listaMateriales":materiales}
+        return render (request, "asistente/gestionarMaterial.html",retorno)
+    else:
+        retorno={"mensaje":"Debe ingresar Sesion"}
+        return render(request, "iniciarSesion.html",retorno)
+    
+def vistaRegistrarSolicitud(request):
+    if request.user.is_authenticated:
+        elementos = Elemento.objects.all()
+        ficha = Ficha.objects.all()
+        unidadesMed = UnidadMedida.objects.all()
+        retorno = {"listaElemento":elementos, "listaFicha": ficha, "listaUnidad":unidadesMed }
+        return render(request, "instructor/registrarSolicitud.html", retorno)
+    else:
+        mensaje = "Debe Iniciar Sesion"
+        return render(request,"iniciarSesion.html",{"mensaje":mensaje})
+    
+def listaSolicitud(request):
+    if request.user.is_authenticated:
+        solicitud = SolicitudElemento.objects.all()
+        retorno = {"listaSolicitud":solicitud}
+        return render (request, "instructor/gestionarSolicitud.html",retorno)
+    else:
+        retorno={"mensaje":"Debe ingresar Sesion"}
+        return render(request, "iniciarSesion.html",retorno)
+
+def registrarSolicitudMaterial(request):
+    if request.method == 'POST':
+        try:
+            with transaction.atomic():            
+                estado = False
+                ficha = int(request.POST['ficha'])
+                nombreProyecto = request.POST['nombreProyecto']
+                fechaRequiere = request.POST['fechaRequerida']
+                fechaSalida = request.POST['fechaFinal']
+                observaciones = request.POST['observaciones']
+                fichaaLlevarMaterial = Ficha.objects.get(pk=ficha)
+                usuarioSol = request.user
+                estadoSolicitud = estadoSolicitudes
+                solicitudMaterial = SolicitudElemento(solProyecto = nombreProyecto, solFicha = fichaaLlevarMaterial,
+                                                      solUsuario = usuarioSol,
+                                                    solFechaHoraRequerida= fechaRequiere, solEstado = estadoSolicitud,
+                                                    solObservaciones = observaciones)
+                solicitudMaterial.save()
+                detalleElemento = json.loads(request.POST['detalleElemento'])
+                for detalle in detalleElemento:
+                    elemento = Elemento.objects.get(id=int(detalle['idSolicitud']))
+                    cantidad = int(detalle['cantidad'])
+                    estado = detalle['estado']
+                    unidadMedida = UnidadMedida.objects.get(pk=int(detalle['idUnidadMedida']))
+                    detalleSolicitud = DetalleSolicitud(detElemento = elemento,
+                                                        detSolicitud = estado, detUnidadMedida = unidadMedida,
+                                                        detCantidadRequerida=cantidad)
+                    detalleSolicitud.save()
+                estado=True
+                mensaje="Se ha registrado la solicitud de Material correctamente"
         except Error as error:
             transaction.rollback()
             mensaje= f"{error}"
