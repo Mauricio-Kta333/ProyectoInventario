@@ -580,10 +580,10 @@ def registrarSolicitudMaterial(request):
                         del centro de la Industria, la Empresa y los Servicios CIES de la ciudad \
                             <br><br><b>Datos de la Solicitud</b> \
                             <br><br><b>Ficha:</b> {fichaaLlevarMaterial.ficCodigo} \
-                            <br><br><b>Programa:</b> {fichaaLlevarMaterial.ficNombre} \
-                            <br><br><b>Proyecto:</b> {nombreProyecto} \
-                            <br><br><b>Fecha Inicial:</b> {fechaRequiere} \
-                            <br><br><b>Fecha Final:</b> {fechaSalida} \
+                            <br><b>Programa:</b> {fichaaLlevarMaterial.ficNombre} \
+                            <br><b>Proyecto:</b> {nombreProyecto} \
+                            <br><b>Fecha Inicial:</b> {fechaRequiere} \
+                            <br><b>Fecha Final:</b> {fechaSalida} \
                             <br><br> El administrador procesara su solicitud para su revision y aprobacion \
                             <br><br> Lo invitamos a ingresar a nuestro sistema para la revision de sus soliitudes en la url:'
                     thread = threading.Thread(target=enviarCorreo,
