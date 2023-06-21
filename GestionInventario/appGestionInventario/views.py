@@ -70,7 +70,7 @@ def registrarUsuario(request):
                 <br><br>Lo invitamos a ingresar a nuestro sistema mediante el siguiente link: \
                 https://gestioninventario.sena.edu.co'
             thread = threading.Thread(target=enviarCorreo,
-                                    args=(asunto,mensaje,user.email))
+                                    args=(asunto,mensaje,[user.email]))
             thread.start()
             #enviar correo al ususario
             return redirect("/vistagestionarUsuario/",retorno)
