@@ -127,19 +127,19 @@
 </div>
 <div>
     {% if mensaje %}
-    {% if estado %}
-    <script>
-        Swal.fire('Elemento', '{{mensaje}}', 'success')
-    </script>
+        {% if estado %}
+            <script>
+                Swal.fire('Elemento', '{{mensaje}}', 'success')
+            </script>
     {% else %}
-    <script>
-        Swal.fire('Elemento', '{{mensaje}}', 'error')
-    </script>
-    {% endif %}
+            <script>
+                Swal.fire('Elemento', '{{mensaje}}', 'error')
+            </script>
+        {% endif %}
     {% endif %}
 </div>
 </div>
 {% endblock %}
 {% block pie_pagina %}
-{% include "pie_Pagina.html" %}
+{% include "pie_pagina.html" %}
 {% endblock %}

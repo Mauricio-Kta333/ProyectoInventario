@@ -54,7 +54,7 @@ function registroSolicitudMaterial(){
             if(resultado.estado){
                 frmMaterialSolicitado.reset();
                 solicitudMateriales.length=0;
-                mostrarDatosTabla();
+                mostrarDatosTablaSolicitud();
             }
             Swal.fire("Registro de Solicitud Material",resultado.mensaje,"success")
         }

@@ -575,7 +575,7 @@ def registrarSolicitudMaterial(request):
                             correoAdministrador = usuario.email
                             break
                     asunto = 'Solicitud en nuestro Sistema CIES-NEIVA'
-                    mensaje =f'Cordial saludo, <b> {request.user.first_name} {request.user.last_name} \
+                    mensaje =f'Cordial saludo, <b> {request.user.first_name} {request.user.last_name} </b> \
                     informarle que hemos recibido su solicitud de elementos en nuestro sistema \
                         del centro de la Industria, la Empresa y los Servicios CIES de la ciudad \
                             <br><br><b>Datos de la Solicitud</b> \
@@ -585,7 +585,7 @@ def registrarSolicitudMaterial(request):
                             <br><b>Fecha Inicial:</b> {fechaRequiere} \
                             <br><b>Fecha Final:</b> {fechaSalida} \
                             <br><br> El administrador procesara su solicitud para su revision y aprobacion \
-                            <br><br> Lo invitamos a ingresar a nuestro sistema para la revision de sus soliitudes en la url:'
+                            <br> Lo invitamos a ingresar a nuestro sistema para la revision de sus soliitudes en la url:'
                     thread = threading.Thread(target=enviarCorreo,
                                               args=(asunto,mensaje,[request.user.email, correoAdministrador]))
                     thread.start()
